@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "appVersion": "0.1.0",
+  "dataFormatVersion": 1,
+  "dshSessionFormatVersion": 3,
+  "supportedTargets": [
+    "win32-x64",
+    "linux-x64",
+    "darwin-arm64"
+  ],
+  "identity": {
+    "productId": "22222222-2222-4222-8222-222222222222",
+    "internalSlug": "qinghe-desig-22222222",
+    "appId": "app.dshself.u22222222",
+    "appUserModelId": "app.dshself.u22222222",
+    "nsisGuid": "22222222-2222-4222-8222-222222222222",
+    "executableName": "qinghe-desig-22222222",
+    "userDataDirName": "qinghe-desig-22222222"
+  },
+  "brand": {
+    "displayName": {
+      "zh": "青禾设计室",
+      "en": "Qinghe Design"
+    },
+    "iconSha256": "93901ee9dacf365e297023167bacefcd49157e885b1f6188858e4ec0909b389c",
+    "iconPreset": "design-pen",
+    "iconDataUrl": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMjU2IiB2aWV3Qm94PSIwIDAgMjU2IDI1NiI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJiZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0ZjQ2ZTUiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMzNjMwOWMiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB4PSI4IiB5PSI4IiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjI0MCIgcng9IjU2IiBmaWxsPSJ1cmwoI2JnKSIvPjxyZWN0IHg9IjUyIiB5PSI1MiIgd2lkdGg9IjE1MiIgaGVpZ2h0PSIxNTIiIHJ4PSIyOCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjEyKSIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1kYXNoYXJyYXk9IjE4IDEyIi8+PHBhdGggZD0iTTE3NCA4MkwxMjYgMTc4TDExNCAxNDJMNzggMTMwTDE3NCA4MloiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSI2IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGNpcmNsZSBjeD0iMTc0IiBjeT0iODIiIHI9IjEwIiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+"
+  },
+  "theme": {
+    "seeds": {
+      "light": {
+        "canvas": "#f1f3fb",
+        "surface": "#ffffff",
+        "ink": "#0f172a",
+        "mutedInk": "#475569",
+        "accent": "#4f46e5",
+        "border": "#cbd5e1",
+        "danger": "#dc2626",
+        "ok": "#15803d"
+      },
+      "dark": {
+        "canvas": "#171e36",
+        "surface": "#252f46",
+        "ink": "#f8fafc",
+        "mutedInk": "#94a3b8",
+        "accent": "#8d87ee",
+        "border": "#334155",
+        "danger": "#f87171",
+        "ok": "#4ade80"
+      }
+    }
+  },
+  "shell": {
+    "defaultPanel": "home",
+    "navOrder": [
+      "home"
+    ],
+    "showReadinessBar": true,
+    "localOnlyToolWebDisabled": true
+  },
+  "home": {
+    "layout": "three-pane",
+    "sections": [
+      "project-list",
+      "design-canvas",
+      "annotations-panel"
+    ],
+    "primaryAction": "design.importImage"
+  },
+  "requiredActions": [
+    "design.importImage",
+    "design.saveAnnotations",
+    "design.exportAnnotatedPng"
+  ],
+  "optionalActions": [
+    "design.openPrototypeStudio"
+  ],
+  "acceptance": {
+    "fixtures": [
+      "fixtures/images/exif-rotated-6.jpg",
+      "fixtures/images/ultra-long-2000x40000.png"
+    ],
+    "expectedOutputs": [
+      "annotated-export.png"
+    ]
+  }
+}

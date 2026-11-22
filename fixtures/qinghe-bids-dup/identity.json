@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "appVersion": "0.1.0",
+  "dataFormatVersion": 1,
+  "dshSessionFormatVersion": 3,
+  "identity": {
+    "productId": "33333333-3333-4333-8333-333333333333",
+    "internalSlug": "qinghe-bids-33333333",
+    "appId": "app.dshself.u33333333",
+    "appUserModelId": "app.dshself.u33333333",
+    "nsisGuid": "33333333-3333-4333-8333-333333333333",
+    "executableName": "qinghe-bids-33333333",
+    "userDataDirName": "qinghe-bids-33333333"
+  },
+  "displayName": {
+    "zh": "青禾投标",
+    "en": "Qinghe Bids"
+  },
+  "chromeColors": {
+    "light": {
+      "backgroundColor": "#eef4f8",
+      "titleBarColor": "#eef4f8",
+      "symbolColor": "#0f172a"
+    },
+    "dark": {
+      "backgroundColor": "#141f33",
+      "titleBarColor": "#141f33",
+      "symbolColor": "#f8fafc"
+    }
+  }
+}

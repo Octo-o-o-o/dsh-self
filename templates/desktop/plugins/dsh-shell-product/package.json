@@ -1,0 +1,50 @@
+{
+  "name": "dsh-shell-product",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./dist/host.js",
+    "./client": "./lib/client.js"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "external": [
+        "react",
+        "react/jsx-runtime",
+        "react-dom",
+        "@deepseek-ai/cordis",
+        "@deepseek-ai/dsh-client-ui-slots"
+      ],
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-sidebar",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-workspace",
+        "@deepseek-ai/dsh-client-ui-sidebar-right"
+      ]
+    }
+  },
+  "dependencies": {
+    "@dsh-self/adapters": "workspace:*",
+    "@dsh-self/product-spec": "workspace:*",
+    "dompurify": "^3.2.6",
+    "docx-preview": "^0.3.7"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.1.0",
+    "@deepseek-ai/dsh-client-locale": "0.2.2-rc.5",
+    "@deepseek-ai/dsh-client-ui-conversation": "0.2.2-rc.5",
+    "@deepseek-ai/dsh-client-ui-layout": "0.2.2-rc.5",
+    "@deepseek-ai/dsh-client-ui-sidebar": "0.2.2-rc.5",
+    "@deepseek-ai/dsh-client-ui-sidebar-right": "0.2.2-rc.5",
+    "@deepseek-ai/dsh-client-ui-slots": "0.2.2-rc.5",
+    "@deepseek-ai/dsh-client-ui-workspace": "0.2.2-rc.5",
+    "@types/react": "18.3.31",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}

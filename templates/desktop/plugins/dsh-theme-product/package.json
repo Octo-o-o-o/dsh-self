@@ -1,0 +1,29 @@
+{
+  "name": "dsh-theme-product",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./lib/client.js"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "external": [
+        "@deepseek-ai/cordis"
+      ],
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-theme"
+      ]
+    }
+  },
+  "dependencies": {
+    "@dsh-self/product-spec": "workspace:*"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.1.0",
+    "@deepseek-ai/dsh-client-ui-theme": "0.2.2-rc.5"
+  }
+}

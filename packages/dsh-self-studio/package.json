@@ -1,0 +1,61 @@
+{
+  "name": "dsh-self-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Self-contained official dsh (>=0.2.2-rc.1 <0.3.0) bundle for creating isolated, custom desktop clients",
+  "engines": {
+    "dsh": ">=0.2.2-rc.1 <0.3.0",
+    "node": ">=24.9"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./client": "./lib/client.js"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "external": [
+        "react",
+        "react/jsx-runtime",
+        "react-dom",
+        "@deepseek-ai/cordis",
+        "@deepseek-ai/dsh-client-ui-slots"
+      ],
+      "inject": [
+        "@deepseek-ai/dsh-client-connection",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-sidebar"
+      ]
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "~4.1.0",
+    "react": "^18.3.1"
+  },
+  "dependencies": {
+    "@dsh-self/adapters": "workspace:*",
+    "@dsh-self/catalog": "workspace:*",
+    "@dsh-self/product-spec": "workspace:*",
+    "ipaddr.js": "^2.2.0",
+    "sharp": "0.35.5",
+    "yaml": "^2.8.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.1.0",
+    "@deepseek-ai/dsh-client-connection": "0.2.2-rc.5",
+    "@deepseek-ai/dsh-client-locale": "0.2.2-rc.5",
+    "@deepseek-ai/dsh-client-ui-layout": "0.2.2-rc.5",
+    "@deepseek-ai/dsh-client-ui-sidebar": "0.2.2-rc.5",
+    "@deepseek-ai/dsh-client-ui-slots": "0.2.2-rc.5",
+    "@types/react": "18.3.31",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}

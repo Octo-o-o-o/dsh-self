@@ -1,0 +1,23 @@
+{
+  "name": "@dsh-self/builder",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "bin": {
+    "dsh-self-builder": "./dist/cli.js"
+  },
+  "dependencies": {
+    "@dsh-self/catalog": "workspace:*",
+    "@dsh-self/product-spec": "workspace:*",
+    "@electron/fuses": "^1.8.0",
+    "electron-builder": "26.18.0",
+    "resedit": "1.7.2",
+    "semver": "^7.7.2",
+    "sharp": "0.35.5",
+    "yaml": "^2.8.0",
+    "zod": "^3.25.76"
+  }
+}

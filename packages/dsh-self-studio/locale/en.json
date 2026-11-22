@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Build My Client (dsh-self Studio)",
+    "description": "Turn a workflow description and optional visual references into an isolated, standalone desktop client with its own icon, data directory, and pinned plugin lock inside official DeepSeek Harness."
+  }
+}

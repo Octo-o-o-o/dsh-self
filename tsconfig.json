@@ -1,0 +1,31 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@dsh-self/product-spec": ["packages/product-spec/src/index.ts"],
+      "@dsh-self/product-spec/schema": ["packages/product-spec/src/schema.ts"],
+      "@dsh-self/product-spec/theme": ["packages/product-spec/src/theme.ts"],
+      "@dsh-self/product-spec/identity": ["packages/product-spec/src/identity.ts"],
+      "@dsh-self/product-spec/catalog-contract": ["packages/product-spec/src/catalog-contract.ts"],
+      "@dsh-self/catalog": ["packages/catalog/src/index.ts"],
+      "@dsh-self/adapters": ["packages/adapters/src/index.ts"],
+      "@dsh-self/adapters/bid-docx": ["packages/adapters/src/bid-docx/index.ts"],
+      "@dsh-self/adapters/design-canvas": ["packages/adapters/src/design-canvas/index.ts"]
+    }
+  },
+  "include": [
+    "packages",
+    "templates/desktop/src",
+    "templates/desktop/plugins",
+    "tools",
+    "tests",
+    "scripts"
+  ],
+  "exclude": [
+    "**/dist/**",
+    "**/lib/**",
+    "**/node_modules/**",
+    "templates/desktop/runtime/**"
+  ]
+}

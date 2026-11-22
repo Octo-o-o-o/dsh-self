@@ -1,0 +1,18 @@
+{
+  "name": "@dsh-self/adapters",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./bid-docx": "./dist/bid-docx/index.js",
+    "./design-canvas": "./dist/design-canvas/index.js"
+  },
+  "dependencies": {
+    "@dsh-self/product-spec": "workspace:*",
+    "dompurify": "^3.2.6",
+    "fflate": "^0.8.2",
+    "sharp": "0.35.5",
+    "zod": "^3.25.76"
+  }
+}

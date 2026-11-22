@@ -1,0 +1,52 @@
+{
+  "name": "dsh-self",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.28.5",
+  "engines": {
+    "node": ">=24.9"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run tests/unit",
+    "test:contract": "vitest run tests/contract",
+    "test:e2e": "vitest run tests/e2e",
+    "test:all": "node scripts/build.mjs && vitest run",
+    "assemble:base-shell": "node scripts/assemble-base-shell.mjs",
+    "build:fixtures": "node scripts/generate-fixtures.mjs",
+    "demo:dsh": "node scripts/launch-official-dsh-demo.mjs",
+    "release:plugin": "node scripts/prepare-plugin-release.mjs --pack",
+    "release:plugin:check": "node scripts/prepare-plugin-release.mjs --check",
+    "website:test": "npm --prefix website test",
+    "verify:win": "node scripts/verify-win-e2e.mjs",
+    "verify:win:installed": "node scripts/verify-win-e2e.mjs --skip-build"
+  },
+  "dependencies": {
+    "dompurify": "^3.2.6",
+    "docx-preview": "^0.3.7",
+    "fflate": "^0.8.2",
+    "ipaddr.js": "^2.2.0",
+    "semver": "^7.7.2",
+    "sharp": "0.35.5",
+    "yaml": "^2.8.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@electron/fuses": "^1.8.0",
+    "@types/node": "24.19.2",
+    "@types/react": "18.3.31",
+    "@types/react-dom": "18.3.7",
+    "@types/semver": "^7.5.8",
+    "electron": "44.11.5",
+    "electron-builder": "26.18.0",
+    "esbuild": "0.28.2",
+    "jsdom": "^26.1.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "resedit": "1.7.2",
+    "typescript": "5.9.3",
+    "vitest": "5.1.1"
+  }
+}

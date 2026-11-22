@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "target": "win32-x64",
+  "dshRuntimeVersion": "0.2.2-rc.5",
+  "templateCommit": "48f3f01961d34509bc85245dadc6dfdaede9b65b",
+  "nodeVersion": "26.12.1",
+  "transitiveLockDigest": "3a2a1d3138dbb537a12b77c3628eeba0d321e8d0d5f0b1b70896b02a42294200",
+  "plugins": [
+    {
+      "packageName": "@dsh-self/adapter-design-canvas",
+      "version": "0.1.0",
+      "trustTier": "builtin",
+      "sourceKind": "builtin",
+      "sourceRef": "builtin:@dsh-self/adapters#design-canvas",
+      "integritySha512": "sha512-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+      "runtimeKind": "host-and-client",
+      "providesActions": [
+        "design.importImage",
+        "design.saveAnnotations",
+        "design.exportAnnotatedPng"
+      ],
+      "requiresConnections": [],
+      "enableOrder": 0
+    },
+    {
+      "packageName": "dsh-design-studio",
+      "version": "0.28.0",
+      "trustTier": "verified-community",
+      "sourceKind": "git",
+      "sourceRef": "github:OrderG-X/dsh-design-studio#49a42f0c64f1b496b063d7a6b36c00e778a7e0fd",
+      "integritySha512": "sha512-RGVzaWduU3R1ZGlvMDI4ME9yZGVyR1g0OWE0MmYwYzY0ZjFiNDk2YjA2M2Q3YTZiMzZjMDBlNzc4",
+      "runtimeKind": "client-only",
+      "providesActions": [
+        "design.openPrototypeStudio"
+      ],
+      "requiresConnections": [],
+      "enableOrder": 1
+    }
+  ]
+}

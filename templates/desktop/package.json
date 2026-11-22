@@ -1,0 +1,15 @@
+{
+  "name": "@dsh-self/desktop-template",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Parameterized Electron desktop shell template for dsh-self generated clients",
+  "type": "module",
+  "main": "dist/main.js",
+  "dependencies": {
+    "@dsh-self/product-spec": "workspace:*",
+    "yaml": "^2.8.0"
+  },
+  "devDependencies": {
+    "electron": "44.11.5"
+  }
+}

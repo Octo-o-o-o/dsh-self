@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>使用与发布指南 — dsh-self | OctoLab</title>
+  <meta name="description" content="dsh-self 完整使用指南：官方 dsh@0.2.2-rc.5 插件安装、6 步制作流程、10 项插件发布门禁、CLI 独立打包器、product.json 契约与个人/≤20人公司免费商业授权说明。">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="OctoLab (Octo-o-o-o)">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f4f7f6">
+  <link rel="canonical" href="https://dsh-self.octoooo.com/guide">
+  <link rel="alternate" hreflang="zh-CN" href="https://dsh-self.octoooo.com/guide">
+  <link rel="alternate" hreflang="en" href="https://dsh-self.octoooo.com/en/guide">
+  <link rel="alternate" hreflang="x-default" href="https://dsh-self.octoooo.com/guide">
+  <link rel="icon" type="image/svg+xml" href="/assets/icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="dsh-self · OctoLab">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:title" content="使用与发布指南 — dsh-self">
+  <meta property="og:description" content="官方 dsh@0.2.2-rc.5 插件安装、10 项发布门禁、CLI 独立打包器与双许可商业授权说明。">
+  <meta property="og:url" content="https://dsh-self.octoooo.com/guide">
+  <meta property="og:image" content="https://dsh-self.octoooo.com/assets/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="dsh-self 使用与发布指南">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="使用与发布指南 — dsh-self">
+  <meta name="twitter:description" content="官方 dsh@0.2.2-rc.5 插件安装、10 项发布门禁、CLI 独立打包器与双许可商业授权说明。">
+  <meta name="twitter:image" content="https://dsh-self.octoooo.com/assets/og-card.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "headline": "dsh-self 使用与发布指南",
+        "description": "面向 DeepSeek Harness (dsh@0.2.2-rc.5) 用户、插件维护者与桌面客户端打包作者的完整实操手册。",
+        "url": "https://dsh-self.octoooo.com/guide",
+        "inLanguage": "zh-CN",
+        "author": { "@type": "Organization", "name": "OctoLab", "url": "https://octoooo.com" },
+        "publisher": { "@type": "Organization", "name": "OctoLab", "url": "https://octoooo.com" }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "dsh-self 首页", "item": "https://dsh-self.octoooo.com/" },
+          { "@type": "ListItem", "position": 2, "name": "使用与发布指南", "item": "https://dsh-self.octoooo.com/guide" }
+        ]
+      }
+    ]
+  }
+  </script>
+  <script src="/appearance.js"></script>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/guide.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到正文</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/">
+        <img src="/assets/icon.svg" alt="" width="32" height="32">
+        <span>dsh-self</span>
+        <span class="brand-tag">使用指南</span>
+      </a>
+
+      <nav class="nav-links" aria-label="主导航">
+        <a href="/">首页</a>
+        <a href="/guide" aria-current="page">使用指南</a>
+        <a href="#plugin-release">插件发布</a>
+        <a href="#licensing">许可与商用</a>
+        <a href="/dsh/index.json">插件索引 JSON</a>
+      </nav>
+
+      <div class="header-controls">
+        <a class="header-ext" href="https://github.com/Octo-o-o-o/dsh-self" target="_blank" rel="noopener noreferrer" aria-label="GitHub 项目仓库">
+          <svg class="icon-inline" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.54 2.87 8.39 6.84 9.75.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.88-2.78.62-3.37-1.21-3.37-1.21-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.94.86.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.08 0-1.12.39-2.04 1.03-2.76-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.35 9.35 0 0 1 12 6.84c.85 0 1.71.12 2.51.35 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.64 1.03 2.76 0 3.95-2.34 4.82-4.57 5.07.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.59.69.49A10.26 10.26 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z"/></svg>
+          <span>GitHub</span>
+        </a>
+        <a class="header-ext" href="https://octoooo.com" target="_blank" rel="noopener noreferrer" aria-label="OctoLab 官网 octoooo.com">
+          <span>OctoLab</span>
+          <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 5h5v5M19 5l-9 9M18 13v6H5V6h6"/></svg>
+        </a>
+        <div class="theme-group" role="group" aria-label="外观主题">
+          <button type="button" class="theme-btn" data-theme-choice="system" aria-pressed="true">跟随系统</button>
+          <button type="button" class="theme-btn" data-theme-choice="light" aria-pressed="false">浅色</button>
+          <button type="button" class="theme-btn" data-theme-choice="dark" aria-pressed="false">深色</button>
+        </div>
+        <a class="lang-link" href="/en/guide" data-lang-switch="en" lang="en">English</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="wrap guide-layout">
+    <aside class="guide-toc" aria-label="文档目录">
+      <h2>本页目录</h2>
+      <ul>
+        <li><a href="#quickstart">1. 快速启动与演示</a></li>
+        <li><a href="#studio">2. Studio 6 步工作台</a></li>
+        <li><a href="#plugin-release">3. DSH 插件发布准备</a></li>
+        <li><a href="#builder-cli">4. CLI 独立打包器</a></li>
+        <li><a href="#spec">5. product.json 契约</a></li>
+        <li><a href="#diagnostics">6. 隐私、自愈与诊断</a></li>
+        <li><a href="#licensing">7. 许可与商业授权</a></li>
+      </ul>
+    </aside>
+
+    <article class="guide-article">
+      <header class="guide-hero">
+        <h1>dsh-self 使用与发布指南</h1>
+        <p>面向 DeepSeek Harness（<code>dsh@0.2.2-rc.5</code>）用户、插件维护者与桌面客户端打包作者的完整实操手册。</p>
+      </header>
+
+      <section class="guide-section" id="quickstart">
+        <h2>1. 快速启动与隔离演示</h2>
+        <p>环境要求：<strong>Node.js &gt;= 24.9</strong>（基线 <code>26.12.1</code>）、<strong>pnpm 11.28.5</strong>、以及官方 <strong>DeepSeek Harness &gt;= 0.2.2-rc.1 &lt; 0.3.0</strong>（已在官方 <code>0.2.2-rc.1</code> 桌面端与 <code>0.2.2-rc.5</code> 双版本实机通过；生成的独立客户端内置锁定 <code>0.2.2-rc.5</code>）。</p>
+        <pre>npm run build
+node scripts/launch-official-dsh-demo.mjs</pre>
+        <p>演示脚本会自动将自包含的 <code>dsh-self-studio</code> 安装到 <code>.dev/official-dsh-demo/dsh-home</code> 隔离 profile，并在 <code>http://127.0.0.1:14567</code> 启动官方 <code>dsh web</code>，不会修改你日常使用的 <code>~/.dsh</code> 目录。</p>
+      </section>
+
+      <section class="guide-section" id="studio">
+        <h2>2. Studio 6 步工作台说明</h2>
+        <ul class="clean-list">
+          <li><strong>第 1 步 · 写需求</strong>：支持一键用 <code>dsh</code> 默认模型扩写需求（离线自动补全）、上传参考图（区分「参考配色与布局」与「放进工作区编辑」）、SSRF 防护读取参考网址，或直接导入既有 <code>product.json</code> 开启二次迭代。</li>
+          <li><strong>第 2 步 · 选方案</strong>：基于闭集组件目录生成极简 / 标准 / 专业三套方案，实时对比浅色/深色 1:1 窗口。</li>
+          <li><strong>第 3 步 · 选插件</strong>：四步静态准入（<code>dsh.bundle.patch</code> 与禁 <code>!!js</code>、平台/Node/<code>--ignore-scripts</code> 原生门禁、<code>cordis</code> &amp; <code>react</code> peer 检查、三态兼容判定）+ 六维冲突过滤，自动标注本机已装插件。</li>
+          <li><strong>第 4 步 · 改外观</strong>：支持 4 种布局骨架（<code>single-column</code> / <code>list-detail</code> / <code>three-pane</code> / <code>dashboard-grid</code>）、自定义图标、8 项亮暗语义种子色与首页模块增删排序。</li>
+          <li><strong>第 5 步 · 试用微调</strong>：独立子进程启动 1:1 隔离预览，支持桌面/窄屏切换、右侧自然语言微调与历史修订回退。</li>
+          <li><strong>第 6 步 · 生成安装包</strong>：多选 Windows / Linux / macOS 目标平台；本机直打 Windows NSIS <code>.exe</code>，跨平台生成便携迁移包、GitHub Actions 工作流或 Docker/远程脚本，所有发布记录自动持久化。</li>
+        </ul>
+      </section>
+
+      <section class="guide-section" id="plugin-release">
+        <h2>3. DSH 插件发布准备（10 项门禁）</h2>
+        <p>由于主仓库采用 monorepo，<code>packages/dsh-self-studio</code> 开发态包含 <code>workspace:*</code>。发布前务必使用统一发布脚本产出独立自包含包并过 10 项门禁：</p>
+        <pre># 1. 打包并运行 10 项 DSH 插件发布校验
+node scripts/prepare-plugin-release.mjs --pack
+
+# 2. 本机安装 .tgz 冒烟验证
+dsh plugin --profile web add .dev/plugin-release/dsh-self-studio-0.1.0.tgz
+
+# 3. 发布到 npm（仅从校验通过的独立目录发布）
+npm publish .dev/plugin-release/dsh-self-studio --access public
+
+# 4. 同步到独立公开 Git 分发仓库（供 github: 安装、dsh.pub 与 dsh.so）
+node scripts/prepare-plugin-release.mjs --sync-dist ../dsh-self-studio</pre>
+        <p>同时，本站已在 <code>https://dsh-self.octoooo.com/dsh/index.json</code> 托管符合官方 <code>format: 1</code> 规范的自定义插件索引（含 <code>dsh/icons/dsh-self-studio.svg</code>），公开发布至 npm 后即可直接被官方 DSH「发现」标签页拉取安装。</p>
+      </section>
+
+      <section class="guide-section" id="builder-cli">
+        <h2>4. CLI 独立打包器</h2>
+        <p><code>tools/builder</code> 作为独立信任根，可在无界面或 CI 环境下一次性快照 <code>product.json</code> 与平台锁文件，执行三步预打包流水线：</p>
+        <pre>npm run build
+npm run assemble:base-shell
+
+node tools/builder/dist/cli.js \
+  --product fixtures/qinghe-bids/product.json \
+  --lock fixtures/qinghe-bids/locks/plugins.win32-x64.lock.json \
+  --target win32-x64 \
+  --base-shell .dev/base-shell/win32-x64 \
+  --out .dev/out/qinghe-bids</pre>
+        <p>Windows 11 真机 5 包 E2E 验收（静默安装与 Electron Fuses、冷启 <code>/api/product-spec</code> HTTP 200 且 0 孤儿进程、同机并存、同名消歧、改名升级与双槽换槽、脱敏诊断包 0 泄漏、NSIS 降级拦截退出码 <code>1638</code> 及单边卸载）已全量通过，可运行 <code>node scripts/verify-win-e2e.mjs</code> 复现。</p>
+      </section>
+
+      <section class="guide-section" id="spec">
+        <h2>5. product.json 核心契约</h2>
+        <p>跨平台唯一产品源定义采用严格 Zod Schema（拒绝任意布局树、脚本表达式或原始 HTML/CSS），明确区分<strong>创建时冻结的 <code>identity</code></strong>与<strong>随修订可变的 <code>brand</code> / <code>theme</code> / <code>home</code></strong>：</p>
+        <div class="table-scroll" tabindex="0" aria-label="product.json 契约表">
+          <table>
+            <thead>
+              <tr>
+                <th>字段</th>
+                <th>可变性</th>
+                <th>约束与作用</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>identity.*</code></td>
+                <td>创建后不可变</td>
+                <td><code>productId</code>、<code>internalSlug</code>（&lt;= 21 字符）、<code>appId</code>、<code>appUserModelId</code>、<code>nsisGuid</code>、<code>executableName</code>、<code>userDataDirName</code>；用于隔离注册表、安装目录与用户数据。</td>
+              </tr>
+              <tr>
+                <td><code>brand</code></td>
+                <td>随修订可变</td>
+                <td>中英文 <code>displayName</code>（&lt;= 64 字符、去控制字符）、<code>iconSha256</code>、图标预设或上传图片；改名升级自动清理旧 <code>.lnk</code>。</td>
+              </tr>
+              <tr>
+                <td><code>theme.seeds</code></td>
+                <td>随修订可变</td>
+                <td>亮/暗各 8 项 <code>#RRGGBB</code> 语义种子色，纯函数统一派生 110+ <code>--dsw-*</code> 变量与 Electron 原生窗口底色，并钳制 WCAG 4.5:1 对比度。</td>
+              </tr>
+              <tr>
+                <td><code>home</code> &amp; <code>requiredActions</code></td>
+                <td>随修订可变</td>
+                <td>仅限闭集 4 种骨架、9 种组件与 13 种标准动作（<code>panel-open</code> / <code>host-service</code> / <code>seeded-session</code>）。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="guide-section" id="diagnostics">
+        <h2>6. 隐私默认值、双槽自愈与脱敏诊断</h2>
+        <ul class="clean-list">
+          <li><strong>零默认外发</strong>：种子层 <code>cordis.patch.yml</code> 关闭 <code>session-log-deepseek</code> 与 <code>plugin-package-inventory-deepseek</code>，启动环境强制 <code>DSH_TELEMETRY_DISABLED=1</code>。</li>
+          <li><strong>最小环境白名单</strong>：Host 与构建子进程剥离 <code>NODE_OPTIONS</code> 与外部模型 API Key，仅保留 OS 基础变量、企业代理及 <code>SSL_CERT_FILE</code> / <code>NODE_EXTRA_CA_CERTS</code>。</li>
+          <li><strong>双槽自愈</strong>：安装更新以 <code>seedHash</code> 切换 <code>&lt;userData&gt;/h/profiles/p-&lt;hash&gt;</code>，保留上一健康槽并在连续 2 次冷启失败时自动回退。</li>
+          <li><strong>脱敏诊断包</strong>：导出前校验非符号链接，自动脱敏密钥、Bearer、JWT、PEM 私钥与本地路径，物理排除 <code>.credentials.yaml</code> 与 <code>.env*</code>。</li>
+        </ul>
+      </section>
+
+      <section class="guide-section" id="licensing">
+        <h2>7. 许可与商业授权（个人 &amp; 20 人内公司免费）</h2>
+        <p><code>dsh-self</code> 及其嵌入在打包桌面客户端内的原创桌面壳运行时与内置适配器，采用 <strong>PolyForm Noncommercial License 1.0.0 + 20 人以内公司内部免费附加许可 + OctoLab 商业授权</strong>：</p>
+        <div class="table-scroll" tabindex="0" aria-label="授权场景对照表">
+          <table>
+            <thead>
+              <tr>
+                <th>使用场景</th>
+                <th>费用</th>
+                <th>说明</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>个人自用 / 公益免费分享 / 学术与非营利机构</td>
+                <td><span class="status-pill status-ok">免费</span></td>
+                <td>适用 <code>PolyForm Noncommercial License 1.0.0</code>，分发须保留 <code>LICENSE</code>、<code>COMMERCIAL-LICENSE.md</code> 与 <code>THIRD_PARTY_NOTICES.md</code>。</td>
+              </tr>
+              <tr>
+                <td>公司 / 团队内部免费自用（总计 ≤ 20 人）</td>
+                <td><span class="status-pill status-ok">免费，无需申请</span></td>
+                <td>公司及关联主体内总人数不超过 20 人且严格限于内部自用，不得对外售卖或向外部客户收费交付。</td>
+              </tr>
+              <tr>
+                <td>公司内部使用超过 20 人（&gt; 20 人）</td>
+                <td><span class="status-pill status-warn">需商业授权</span></td>
+                <td>超规模内部部署请联系 <a href="mailto:octoooo@octoooo.com">octoooo@octoooo.com</a>。</td>
+              </tr>
+              <tr>
+                <td>打包独立客户端对外售卖 / 订阅 / 外包交付 / 白标</td>
+                <td><span class="status-pill status-warn">需商业授权</span></td>
+                <td>无论团队人数多少，只要对外售卖或收费交付打包客户端，须事先联系 <a href="mailto:octoooo@octoooo.com">octoooo@octoooo.com</a> 签署商业授权；详见 <code>COMMERCIAL-LICENSE.md</code>。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>第三方社区插件提醒：</strong>若你在打包客户端时引入第三方社区 DSH 插件（如 <code>dsh-plugin-bidkit</code>、<code>dsh-design-studio</code> 等），需另行遵守该社区插件原作者的许可协议。</p>
+      </section>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/">
+            <img src="/assets/icon.svg" alt="" width="30" height="30">
+            <span>dsh-self</span>
+          </a>
+          <p>把 DeepSeek Harness 工作流打包成独立桌面客户端：一次打包好、版本双固定、可直接分发给他人使用。</p>
+          <a class="footer-lab-link" href="https://octoooo.com" target="_blank" rel="noopener noreferrer">
+            <span>OctoLab · octoooo.com</span>
+            <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 5h5v5M19 5l-9 9M18 13v6H5V6h6"/></svg>
+          </a>
+        </div>
+
+        <nav class="footer-col" aria-label="产品与文档">
+          <h2>产品与文档</h2>
+          <ul>
+            <li><a href="/">首页</a></li>
+            <li><a href="/guide">使用与发布指南</a></li>
+            <li><a href="/#overview">核心理念</a></li>
+            <li><a href="/#install">安装 dsh-self-studio</a></li>
+            <li><a href="/dsh/index.json">DSH 插件索引 JSON</a></li>
+          </ul>
+        </nav>
+
+        <nav class="footer-col" aria-label="项目与许可">
+          <h2>项目与许可</h2>
+          <ul>
+            <li><a href="https://github.com/Octo-o-o-o/dsh-self" target="_blank" rel="noopener noreferrer">GitHub 仓库<svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 5h5v5M19 5l-9 9M18 13v6H5V6h6"/></svg></a></li>
+            <li><a href="https://github.com/Octo-o-o-o/dsh-self/issues" target="_blank" rel="noopener noreferrer">问题反馈 Issues</a></li>
+            <li><a href="https://github.com/Octo-o-o-o/dsh-self/blob/main/COMMERCIAL-LICENSE.md" target="_blank" rel="noopener noreferrer">商业授权说明</a></li>
+            <li><a href="https://github.com/Octo-o-o-o/dsh-self/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">LICENSE 协议原文</a></li>
+            <li><a href="https://github.com/Octo-o-o-o/dsh-self/blob/main/THIRD_PARTY_NOTICES.md" target="_blank" rel="noopener noreferrer">第三方开源声明</a></li>
+          </ul>
+        </nav>
+
+        <nav class="footer-col" aria-label="OctoLab 生态">
+          <h2>OctoLab 生态</h2>
+          <ul>
+            <li><a href="https://octoooo.com" target="_blank" rel="noopener noreferrer">OctoLab 官网 (octoooo.com)<svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 5h5v5M19 5l-9 9M18 13v6H5V6h6"/></svg></a></li>
+            <li><a href="https://dsh.pub" target="_blank" rel="noopener noreferrer">dsh.pub 插件目录</a></li>
+            <li><a href="mailto:octoooo@octoooo.com">商业授权：octoooo@octoooo.com</a></li>
+            <li><a href="/en/guide" data-lang-switch="en" lang="en">English Guide</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 <a href="https://octoooo.com" target="_blank" rel="noopener noreferrer">OctoLab</a> (Octo-o-o-o) · PolyForm Noncommercial 1.0.0 + ≤ 20 人公司内部免费 + 商业授权</span>
+        <span>独立项目，与 DeepSeek 官方无隶属关系。</span>
+      </div>
+    </div>
+  </footer>
+  <script type="module" src="/site.js"></script>
+</body>
+</html>

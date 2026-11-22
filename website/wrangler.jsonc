@@ -1,0 +1,17 @@
+{
+  "name": "dsh-self-site",
+  "compatibility_date": "2026-11-01",
+  "main": "./worker.mjs",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": true
+  },
+  "routes": [
+    {
+      "pattern": "dsh-self.octoooo.com",
+      "custom_domain": true
+    }
+  ]
+}

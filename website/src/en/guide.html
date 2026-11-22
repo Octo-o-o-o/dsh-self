@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Usage &amp; Publishing Guide — dsh-self | OctoLab</title>
+  <meta name="description" content="Complete dsh-self technical guide: installing dsh-self-studio on official dsh@0.2.2-rc.5, 6-step workflow, 10-gate plugin release prep, standalone CLI builder, product.json contract, and dual licensing.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="OctoLab (Octo-o-o-o)">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f4f7f6">
+  <link rel="canonical" href="https://dsh-self.octoooo.com/en/guide">
+  <link rel="alternate" hreflang="zh-CN" href="https://dsh-self.octoooo.com/guide">
+  <link rel="alternate" hreflang="en" href="https://dsh-self.octoooo.com/en/guide">
+  <link rel="alternate" hreflang="x-default" href="https://dsh-self.octoooo.com/guide">
+  <link rel="icon" type="image/svg+xml" href="/assets/icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="dsh-self · OctoLab">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="zh_CN">
+  <meta property="og:title" content="Usage &amp; Publishing Guide — dsh-self">
+  <meta property="og:description" content="Installing dsh-self-studio on official dsh@0.2.2-rc.5, 10-gate plugin publishing, CLI builder, and dual licensing.">
+  <meta property="og:url" content="https://dsh-self.octoooo.com/en/guide">
+  <meta property="og:image" content="https://dsh-self.octoooo.com/assets/og-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="dsh-self Usage &amp; Publishing Guide">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Usage &amp; Publishing Guide — dsh-self">
+  <meta name="twitter:description" content="Installing dsh-self-studio on official dsh@0.2.2-rc.5, 10-gate plugin publishing, CLI builder, and dual licensing.">
+  <meta name="twitter:image" content="https://dsh-self.octoooo.com/assets/og-card.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "headline": "dsh-self Usage & Publishing Guide",
+        "description": "Operational reference for DeepSeek Harness (dsh@0.2.2-rc.5) users, plugin maintainers, and standalone desktop app authors.",
+        "url": "https://dsh-self.octoooo.com/en/guide",
+        "inLanguage": "en",
+        "author": { "@type": "Organization", "name": "OctoLab", "url": "https://octoooo.com" },
+        "publisher": { "@type": "Organization", "name": "OctoLab", "url": "https://octoooo.com" }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "dsh-self Home", "item": "https://dsh-self.octoooo.com/en/" },
+          { "@type": "ListItem", "position": 2, "name": "Usage & Publishing Guide", "item": "https://dsh-self.octoooo.com/en/guide" }
+        ]
+      }
+    ]
+  }
+  </script>
+  <script src="/appearance.js"></script>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/guide.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="/en/">
+        <img src="/assets/icon.svg" alt="" width="32" height="32">
+        <span>dsh-self</span>
+        <span class="brand-tag">Guide</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="/en/">Home</a>
+        <a href="/en/guide" aria-current="page">Guide</a>
+        <a href="#plugin-release">Plugin Release</a>
+        <a href="#licensing">Licensing</a>
+        <a href="/dsh/index.json">Plugin Index JSON</a>
+      </nav>
+
+      <div class="header-controls">
+        <a class="header-ext" href="https://github.com/Octo-o-o-o/dsh-self" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository">
+          <svg class="icon-inline" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.54 2.87 8.39 6.84 9.75.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.88-2.78.62-3.37-1.21-3.37-1.21-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.94.86.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.08 0-1.12.39-2.04 1.03-2.76-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.35 9.35 0 0 1 12 6.84c.85 0 1.71.12 2.51.35 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.64 1.03 2.76 0 3.95-2.34 4.82-4.57 5.07.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.59.69.49A10.26 10.26 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z"/></svg>
+          <span>GitHub</span>
+        </a>
+        <a class="header-ext" href="https://octoooo.com" target="_blank" rel="noopener noreferrer" aria-label="OctoLab website octoooo.com">
+          <span>OctoLab</span>
+          <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 5h5v5M19 5l-9 9M18 13v6H5V6h6"/></svg>
+        </a>
+        <div class="theme-group" role="group" aria-label="Color theme">
+          <button type="button" class="theme-btn" data-theme-choice="system" aria-pressed="true">System</button>
+          <button type="button" class="theme-btn" data-theme-choice="light" aria-pressed="false">Light</button>
+          <button type="button" class="theme-btn" data-theme-choice="dark" aria-pressed="false">Dark</button>
+        </div>
+        <a class="lang-link" href="/guide?lang=zh" data-lang-switch="zh" lang="zh-CN">中文</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="wrap guide-layout">
+    <aside class="guide-toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ul>
+        <li><a href="#quickstart">1. Quick Start &amp; Demo</a></li>
+        <li><a href="#studio">2. 6-Step Studio Flow</a></li>
+        <li><a href="#plugin-release">3. DSH Plugin Release Prep</a></li>
+        <li><a href="#builder-cli">4. Standalone CLI Builder</a></li>
+        <li><a href="#spec">5. product.json Contract</a></li>
+        <li><a href="#diagnostics">6. Privacy &amp; Self-Healing</a></li>
+        <li><a href="#licensing">7. Licensing &amp; Commercial Use</a></li>
+      </ul>
+    </aside>
+
+    <article class="guide-article">
+      <header class="guide-hero">
+        <h1>dsh-self Usage &amp; Publishing Guide</h1>
+        <p>Operational reference for DeepSeek Harness (<code>dsh@0.2.2-rc.5</code>) users, plugin maintainers, and standalone desktop app authors.</p>
+      </header>
+
+      <section class="guide-section" id="quickstart">
+        <h2>1. Quick Start &amp; Isolated Demo</h2>
+        <p>Prerequisites: <strong>Node.js &gt;= 24.9</strong> (baseline <code>26.12.1</code>), <strong>pnpm 11.28.5</strong>, and official <strong>DeepSeek Harness &gt;= 0.2.2-rc.1 &lt; 0.3.0</strong> (verified live on both official <code>0.2.2-rc.1</code> Desktop and <code>0.2.2-rc.5</code>; generated standalone apps embed pinned <code>0.2.2-rc.5</code>).</p>
+        <pre>npm run build
+node scripts/launch-official-dsh-demo.mjs</pre>
+        <p>The demo launcher installs the self-contained <code>dsh-self-studio</code> bundle into an isolated profile under <code>.dev/official-dsh-demo/dsh-home</code> and serves official <code>dsh web</code> on <code>http://127.0.0.1:14567</code> without touching your personal <code>~/.dsh</code> directory.</p>
+      </section>
+
+      <section class="guide-section" id="studio">
+        <h2>2. 6-Step Studio Workbench</h2>
+        <ul class="clean-list">
+          <li><strong>Step 1 · Requirements</strong>: Expand short briefs via your <code>dsh</code> default model (with deterministic offline fallback), attach reference images (workbench layout vs. workspace content), fetch reference URLs behind the SSRF guard, or import an existing <code>product.json</code>.</li>
+          <li><strong>Step 2 · Blueprints</strong>: Pick from Lite, Standard, or Pro blueprints with instant 1:1 light/dark desktop window previews.</li>
+          <li><strong>Step 3 · Plugins</strong>: Enforces 4-step static admission (<code>dsh.bundle.patch</code> &amp; no <code>!!js</code>, platform/Node/<code>--ignore-scripts</code> native policy, <code>cordis</code> &amp; <code>react</code> peers, 3-state compatibility) and 6-dimension conflict filtering while highlighting locally installed DSH plugins.</li>
+          <li><strong>Step 4 · Appearance</strong>: Customize 4 closed-set layouts (<code>single-column</code>, <code>list-detail</code>, <code>three-pane</code>, <code>dashboard-grid</code>), icons, 8 light/dark color seeds, and home module order.</li>
+          <li><strong>Step 5 · Preview &amp; Tweak</strong>: Isolated child-process preview with desktop/narrow toggles, live conversational natural-language refinement, and instant revision rollback.</li>
+          <li><strong>Step 6 · Build &amp; Release</strong>: Build native Windows x64 NSIS <code>.exe</code> installers or generate cross-platform recipes (portable transfer bundle, GitHub Actions workflow, Docker/remote script) with persisted release history.</li>
+        </ul>
+      </section>
+
+      <section class="guide-section" id="plugin-release">
+        <h2>3. DSH Plugin Release Preparation (10 Gates)</h2>
+        <p>Because the monorepo source package uses <code>workspace:*</code>, always use the release script to stage a self-contained artifact and verify all 10 release gates before publishing:</p>
+        <pre># 1. Pack &amp; run all 10 DSH plugin release gates
+node scripts/prepare-plugin-release.mjs --pack
+
+# 2. Local smoke install into official dsh@0.2.2-rc.5
+dsh plugin --profile web add .dev/plugin-release/dsh-self-studio-0.1.0.tgz
+
+# 3. Publish to npm from the verified standalone directory only
+npm publish .dev/plugin-release/dsh-self-studio --access public
+
+# 4. Sync a clean standalone public Git dist repo (for github:, dsh.pub &amp; dsh.so)
+node scripts/prepare-plugin-release.mjs --sync-dist ../dsh-self-studio</pre>
+        <p>This website also hosts a valid <code>format: 1</code> DSH Custom Plugin Index at <code>https://dsh-self.octoooo.com/dsh/index.json</code> alongside <code>dsh/icons/dsh-self-studio.svg</code>, ready for the official DSH Discover tab as soon as npm publication completes.</p>
+      </section>
+
+      <section class="guide-section" id="builder-cli">
+        <h2>4. Standalone CLI Builder</h2>
+        <p><code>tools/builder</code> acts as an independent trust root that snapshots <code>product.json</code> and platform locks once and runs the 3-step prepackaged pipeline headlessly:</p>
+        <pre>npm run build
+npm run assemble:base-shell
+
+node tools/builder/dist/cli.js \
+  --product fixtures/qinghe-bids/product.json \
+  --lock fixtures/qinghe-bids/locks/plugins.win32-x64.lock.json \
+  --target win32-x64 \
+  --base-shell .dev/base-shell/win32-x64 \
+  --out .dev/out/qinghe-bids</pre>
+        <p>The full Windows 11 5-installer E2E suite (silent install &amp; Electron Fuses, cold launch <code>/api/product-spec</code> HTTP 200 with zero orphan Hosts, coexistence, same-name disambiguation, rename upgrade + dual-slot switch, packaged redacted diagnostics with 0 leaks, NSIS downgrade block exit code <code>1638</code>, and unilateral uninstall) has passed end-to-end and can be reproduced with <code>node scripts/verify-win-e2e.mjs</code>.</p>
+      </section>
+
+      <section class="guide-section" id="spec">
+        <h2>5. product.json Contract</h2>
+        <p>The single cross-platform product contract uses strict Zod schemas (zero arbitrary layout trees, script expressions, or raw HTML/CSS) separating <strong>frozen <code>identity</code></strong> from <strong>mutable <code>brand</code> / <code>theme</code> / <code>home</code></strong>:</p>
+        <div class="table-scroll" tabindex="0" aria-label="product.json contract table">
+          <table>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Mutability</th>
+                <th>Constraints &amp; purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>identity.*</code></td>
+                <td>Frozen at creation</td>
+                <td><code>productId</code>, <code>internalSlug</code> (&lt;= 21 chars), <code>appId</code>, <code>appUserModelId</code>, <code>nsisGuid</code>, <code>executableName</code>, <code>userDataDirName</code>; isolates registry keys, install dirs, and user data.</td>
+              </tr>
+              <tr>
+                <td><code>brand</code></td>
+                <td>Mutable across revisions</td>
+                <td>Bilingual <code>displayName</code> (&lt;= 64 chars, control-char stripped), <code>iconSha256</code>, preset or custom icon; rename upgrades clean stale <code>.lnk</code> shortcuts.</td>
+              </tr>
+              <tr>
+                <td><code>theme.seeds</code></td>
+                <td>Mutable across revisions</td>
+                <td>8 light &amp; 8 dark <code>#RRGGBB</code> semantic seeds deterministically deriving 110+ <code>--dsw-*</code> CSS variables and Electron chrome colors with WCAG 4.5:1 clamping.</td>
+              </tr>
+              <tr>
+                <td><code>home</code> &amp; <code>requiredActions</code></td>
+                <td>Mutable across revisions</td>
+                <td>Closed-set 4 layout presets, 9 widgets, and 13 standard actions (<code>panel-open</code>, <code>host-service</code>, <code>seeded-session</code>).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="guide-section" id="diagnostics">
+        <h2>6. Privacy Defaults, Dual-Slot Self-Healing &amp; Diagnostics</h2>
+        <ul class="clean-list">
+          <li><strong>Zero default telemetry</strong>: Seed <code>cordis.patch.yml</code> disables <code>session-log-deepseek</code> and <code>plugin-package-inventory-deepseek</code>; host launch enforces <code>DSH_TELEMETRY_DISABLED=1</code>.</li>
+          <li><strong>Minimal env whitelist</strong>: Host and builder child processes strip <code>NODE_OPTIONS</code> and external model keys while preserving OS basics, corporate proxies, and <code>SSL_CERT_FILE</code> / <code>NODE_EXTRA_CA_CERTS</code>.</li>
+          <li><strong>Dual-slot self-healing</strong>: Updates switch <code>&lt;userData&gt;/h/profiles/p-&lt;seedHash&gt;</code> slots atomically and roll back to the previous verified slot after 2 consecutive boot failures.</li>
+          <li><strong>Redacted diagnostics</strong>: Verifies non-symlink files before zipping, redacts API keys, Bearer tokens, JWTs, PEM keys, and local usernames, and physically excludes <code>.credentials.yaml</code> and <code>.env*</code>.</li>
+        </ul>
+      </section>
+
+      <section class="guide-section" id="licensing">
+        <h2>7. Licensing &amp; Commercial Use (Personal &amp; ≤ 20 Internal Users Free)</h2>
+        <p><code>dsh-self</code> and the original desktop shell runtime &amp; built-in adapters embedded inside generated installers are dual-licensed under <strong>PolyForm Noncommercial License 1.0.0 + Small Internal Team Grant (≤ 20 users) + OctoLab Commercial License</strong>:</p>
+        <div class="table-scroll" tabindex="0" aria-label="Licensing eligibility matrix">
+          <table>
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th>Cost</th>
+                <th>Terms</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Personal use / free sharing / academic &amp; nonprofits</td>
+                <td><span class="status-pill status-ok">Free</span></td>
+                <td>Covered by <code>PolyForm Noncommercial License 1.0.0</code>; keep <code>LICENSE</code>, <code>COMMERCIAL-LICENSE.md</code>, and <code>THIRD_PARTY_NOTICES.md</code> when sharing.</td>
+              </tr>
+              <tr>
+                <td>Internal company use (≤ 20 total users)</td>
+                <td><span class="status-pill status-ok">Free, no license needed</span></td>
+                <td>Strictly internal use within the company and affiliates up to 20 total users; not sold or billed to external clients.</td>
+              </tr>
+              <tr>
+                <td>Internal company use exceeding 20 users (&gt; 20)</td>
+                <td><span class="status-pill status-warn">Commercial license</span></td>
+                <td>Contact <a href="mailto:octoooo@octoooo.com">octoooo@octoooo.com</a> for organization-wide internal licensing.</td>
+              </tr>
+              <tr>
+                <td>Selling packaged clients / paid delivery / white-labeling</td>
+                <td><span class="status-pill status-warn">Commercial license</span></td>
+                <td>Regardless of team size, selling, subscribing, agency/client delivery, or white-labeling packaged clients requires a prior commercial license via <a href="mailto:octoooo@octoooo.com">octoooo@octoooo.com</a> (see <code>COMMERCIAL-LICENSE.md</code>).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Third-party community plugins:</strong> If you bundle third-party community DSH plugins (such as <code>dsh-plugin-bidkit</code> or <code>dsh-design-studio</code>) into a generated client, you must also comply with each plugin author's own license.</p>
+      </section>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/en/">
+            <img src="/assets/icon.svg" alt="" width="30" height="30">
+            <span>dsh-self</span>
+          </a>
+          <p>Turn DeepSeek Harness workflows into standalone desktop apps: pack once, freeze dsh &amp; plugin versions, and share installers directly.</p>
+          <a class="footer-lab-link" href="https://octoooo.com" target="_blank" rel="noopener noreferrer">
+            <span>OctoLab · octoooo.com</span>
+            <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 5h5v5M19 5l-9 9M18 13v6H5V6h6"/></svg>
+          </a>
+        </div>
+
+        <nav class="footer-col" aria-label="Product and docs">
+          <h2>Product &amp; Docs</h2>
+          <ul>
+            <li><a href="/en/">Home</a></li>
+            <li><a href="/en/guide">Usage &amp; Publishing Guide</a></li>
+            <li><a href="/en/#overview">Why dsh-self</a></li>
+            <li><a href="/en/#install">Install dsh-self-studio</a></li>
+            <li><a href="/dsh/index.json">DSH Plugin Index JSON</a></li>
+          </ul>
+        </nav>
+
+        <nav class="footer-col" aria-label="Project and licensing">
+          <h2>Project &amp; Licensing</h2>
+          <ul>
+            <li><a href="https://github.com/Octo-o-o-o/dsh-self" target="_blank" rel="noopener noreferrer">GitHub Repository<svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 5h5v5M19 5l-9 9M18 13v6H5V6h6"/></svg></a></li>
+            <li><a href="https://github.com/Octo-o-o-o/dsh-self/issues" target="_blank" rel="noopener noreferrer">Issues &amp; Feedback</a></li>
+            <li><a href="https://github.com/Octo-o-o-o/dsh-self/blob/main/COMMERCIAL-LICENSE.md" target="_blank" rel="noopener noreferrer">Commercial Licensing Guide</a></li>
+            <li><a href="https://github.com/Octo-o-o-o/dsh-self/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">Full LICENSE Terms</a></li>
+            <li><a href="https://github.com/Octo-o-o-o/dsh-self/blob/main/THIRD_PARTY_NOTICES.md" target="_blank" rel="noopener noreferrer">Third-Party Notices</a></li>
+          </ul>
+        </nav>
+
+        <nav class="footer-col" aria-label="OctoLab ecosystem">
+          <h2>OctoLab</h2>
+          <ul>
+            <li><a href="https://octoooo.com" target="_blank" rel="noopener noreferrer">OctoLab (octoooo.com)<svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 5h5v5M19 5l-9 9M18 13v6H5V6h6"/></svg></a></li>
+            <li><a href="https://dsh.pub" target="_blank" rel="noopener noreferrer">dsh.pub Plugin Registry</a></li>
+            <li><a href="mailto:octoooo@octoooo.com">Licensing: octoooo@octoooo.com</a></li>
+            <li><a href="/guide?lang=zh" data-lang-switch="zh" lang="zh-CN">中文指南</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 <a href="https://octoooo.com" target="_blank" rel="noopener noreferrer">OctoLab</a> (Octo-o-o-o) · PolyForm Noncommercial 1.0.0 + ≤ 20 Internal Users Free + Commercial License</span>
+        <span>Independent project; not affiliated with DeepSeek.</span>
+      </div>
+    </div>
+  </footer>
+  <script type="module" src="/site.js"></script>
+</body>
+</html>

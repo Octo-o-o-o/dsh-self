@@ -1,0 +1,17 @@
+node_modules/
+.dev/
+dist/
+lib/
+*.tsbuildinfo
+*.log
+*.exe
+*.dmg
+*.AppImage
+*.deb
+templates/desktop/runtime/node_modules/
+templates/desktop/runtime/node/
+templates/desktop/runtime/bin/
+templates/desktop/runtime/plugins/
+templates/desktop/runtime/host-entry.js
+templates/desktop/runtime/assemble-stamp.json
+!docs/**

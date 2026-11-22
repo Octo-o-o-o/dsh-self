@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "appVersion": "0.1.0",
+  "dataFormatVersion": 1,
+  "dshSessionFormatVersion": 3,
+  "supportedTargets": [
+    "win32-x64"
+  ],
+  "identity": {
+    "productId": "33333333-3333-4333-8333-333333333333",
+    "internalSlug": "qinghe-bids-33333333",
+    "appId": "app.dshself.u33333333",
+    "appUserModelId": "app.dshself.u33333333",
+    "nsisGuid": "33333333-3333-4333-8333-333333333333",
+    "executableName": "qinghe-bids-33333333",
+    "userDataDirName": "qinghe-bids-33333333"
+  },
+  "brand": {
+    "displayName": {
+      "zh": "青禾投标",
+      "en": "Qinghe Bids"
+    },
+    "iconSha256": "0d733d599d2f975b7ded26101d2e75ad6cbae924f8368e2d2206fc264efa3364",
+    "iconPreset": "workbench-grid",
+    "iconDataUrl": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMjU2IiB2aWV3Qm94PSIwIDAgMjU2IDI1NiI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJiZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwMzY5YTEiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMwMjQ3NmQiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB4PSI4IiB5PSI4IiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjI0MCIgcng9IjU2IiBmaWxsPSJ1cmwoI2JnKSIvPjxyZWN0IHg9IjU0IiB5PSI1NCIgd2lkdGg9IjY2IiBoZWlnaHQ9IjY2IiByeD0iMTYiIGZpbGw9IiNmZmZmZmYiLz48cmVjdCB4PSIxMzYiIHk9IjU0IiB3aWR0aD0iNjYiIGhlaWdodD0iNjYiIHJ4PSIxNiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjcyKSIvPjxyZWN0IHg9IjU0IiB5PSIxMzYiIHdpZHRoPSI2NiIgaGVpZ2h0PSI2NiIgcng9IjE2IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNzIpIi8+PHJlY3QgeD0iMTM2IiB5PSIxMzYiIHdpZHRoPSI2NiIgaGVpZ2h0PSI2NiIgcng9IjE2IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMzUpIiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iOCIvPjwvc3ZnPg=="
+  },
+  "theme": {
+    "seeds": {
+      "light": {
+        "canvas": "#eef4f8",
+        "surface": "#ffffff",
+        "ink": "#0f172a",
+        "mutedInk": "#475569",
+        "accent": "#0369a1",
+        "border": "#cbd5e1",
+        "danger": "#dc2626",
+        "ok": "#15803d"
+      },
+      "dark": {
+        "canvas": "#141f33",
+        "surface": "#223043",
+        "ink": "#f8fafc",
+        "mutedInk": "#94a3b8",
+        "accent": "#5b9ec2",
+        "border": "#334155",
+        "danger": "#f87171",
+        "ok": "#4ade80"
+      }
+    }
+  },
+  "shell": {
+    "defaultPanel": "home",
+    "navOrder": [
+      "home"
+    ],
+    "showReadinessBar": true,
+    "localOnlyToolWebDisabled": true
+  },
+  "home": {
+    "layout": "single-column",
+    "sections": [
+      "deadlines",
+      "bid-preview"
+    ],
+    "primaryAction": "bid.importRequirements"
+  },
+  "requiredActions": [
+    "bid.importRequirements",
+    "bid.exportResponseDocx"
+  ],
+  "optionalActions": [],
+  "acceptance": {
+    "fixtures": [
+      "fixtures/docx/valid-bid.docx"
+    ],
+    "expectedOutputs": [
+      "response.docx"
+    ]
+  }
+}

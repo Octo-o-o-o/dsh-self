@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "target": "win32-x64",
+  "dshRuntimeVersion": "0.2.2-rc.5",
+  "templateCommit": "48f3f01961d34509bc85245dadc6dfdaede9b65b",
+  "nodeVersion": "26.12.1",
+  "transitiveLockDigest": "907cdac3216897fe122a59ab92f6586f55dcc833e037da34bb9df10ff539bca0",
+  "plugins": [
+    {
+      "packageName": "@dsh-self/adapter-bid-docx",
+      "version": "0.1.0",
+      "trustTier": "builtin",
+      "sourceKind": "builtin",
+      "sourceRef": "builtin:@dsh-self/adapters#bid-docx",
+      "integritySha512": "sha512-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+      "runtimeKind": "host-and-client",
+      "providesActions": [
+        "bid.importRequirements",
+        "bid.exportResponseDocx",
+        "bid.draftResponseAi"
+      ],
+      "requiresConnections": [],
+      "enableOrder": 0
+    }
+  ]
+}

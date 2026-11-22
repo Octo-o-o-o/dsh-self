@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "target": "darwin-arm64",
+  "dshRuntimeVersion": "0.2.2-rc.5",
+  "templateCommit": "48f3f01961d34509bc85245dadc6dfdaede9b65b",
+  "nodeVersion": "26.12.1",
+  "transitiveLockDigest": "eaa76b6d816e6a0f560bbba244885f2d9fae55ef54560ae3248cd5d289c2de0c",
+  "plugins": [
+    {
+      "packageName": "@dsh-self/adapter-bid-docx",
+      "version": "0.1.0",
+      "trustTier": "builtin",
+      "sourceKind": "builtin",
+      "sourceRef": "builtin:@dsh-self/adapters#bid-docx",
+      "integritySha512": "sha512-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+      "runtimeKind": "host-and-client",
+      "providesActions": [
+        "bid.importRequirements",
+        "bid.exportResponseDocx",
+        "bid.draftResponseAi"
+      ],
+      "requiresConnections": [],
+      "enableOrder": 0
+    },
+    {
+      "packageName": "@dsh-self/adapter-local-calendar",
+      "version": "0.1.0",
+      "trustTier": "builtin",
+      "sourceKind": "builtin",
+      "sourceRef": "builtin:@dsh-self/adapters#local-calendar",
+      "integritySha512": "sha512-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+      "runtimeKind": "client-only",
+      "providesActions": [
+        "calendar.addDeadline"
+      ],
+      "requiresConnections": [],
+      "enableOrder": 1
+    }
+  ]
+}

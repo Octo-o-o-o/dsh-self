@@ -1,0 +1,17 @@
+{
+  "name": "@dsh-self/product-spec",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./schema": "./dist/schema.js",
+    "./theme": "./dist/theme.js",
+    "./identity": "./dist/identity.js",
+    "./catalog-contract": "./dist/catalog-contract.js"
+  },
+  "dependencies": {
+    "semver": "^7.7.2",
+    "zod": "^3.25.76"
+  }
+}

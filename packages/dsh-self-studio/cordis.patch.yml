@@ -1,0 +1,4 @@
+# Standard plain YAML bundle patch (core YAML schema only).
+- insert:
+    - id: dsh-self-studio
+      name: dsh-self-studio

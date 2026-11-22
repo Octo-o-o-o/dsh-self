@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="ogbg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0b1215"/>
+      <stop offset="60%" stop-color="#0f2328"/>
+      <stop offset="100%" stop-color="#0c3a39"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#ogbg)"/>
+  <g opacity="0.12" stroke="#5eead4" stroke-width="1">
+    <path d="M0 105h1200M0 210h1200M0 315h1200M0 420h1200M0 525h1200"/>
+    <path d="M150 0v630M300 0v630M450 0v630M600 0v630M750 0v630M900 0v630M1050 0v630"/>
+  </g>
+  <rect x="84" y="80" width="84" height="84" rx="20" fill="#0f766e"/>
+  <rect x="100" y="98" width="52" height="38" rx="7" fill="#ffffff"/>
+  <rect x="115" y="140" width="22" height="5" rx="2.5" fill="#99f6e4"/>
+  <text x="190" y="132" fill="#99f6e4" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="700">OCTOLAB · OCTOOOO.COM</text>
+  <text x="84" y="256" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="68" font-weight="800">dsh-self</text>
+  <text x="84" y="330" fill="#99f6e4" font-family="Segoe UI, Arial, sans-serif" font-size="33" font-weight="600">Pack DeepSeek Harness workflows into standalone desktop apps</text>
+  <text x="84" y="392" fill="#cbd5e1" font-family="Segoe UI, Arial, sans-serif" font-size="25">Pack once · Pinned dsh &amp; plugin versions · Ready to share · Free ≤ 20 internal users</text>
+  <rect x="84" y="458" width="336" height="54" rx="27" fill="#0f766e"/>
+  <text x="252" y="494" text-anchor="middle" fill="#ffffff" font-family="Cascadia Mono, Consolas, monospace" font-size="24" font-weight="600">dsh-self.octoooo.com</text>
+</svg>

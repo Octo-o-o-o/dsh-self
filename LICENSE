@@ -1,0 +1,179 @@
+# dsh-self Dual-License Notice / 双重许可协议声明
+
+Copyright (c) 2026 OctoLab (Octo-o-o-o). All rights reserved.
+
+Required Notice: Copyright (c) 2026 OctoLab (Octo-o-o-o) (https://dsh-self.octoooo.com/ | https://github.com/Octo-o-o-o/dsh-self). Free for personal, noncommercial use under PolyForm Noncommercial License 1.0.0, and free for internal company use up to 20 users under the Small Internal Team Grant; internal use exceeding 20 users or any external commercial sale, paid distribution, or paid client delivery of packaged desktop clients requires a prior paid commercial license from OctoLab (octoooo@octoooo.com).
+
+---
+
+## Dual-Licensing Summary (English)
+
+**dsh-self** (including `dsh-self-studio`, `@dsh-self/product-spec`, `@dsh-self/catalog`, `@dsh-self/adapters`, the `templates/desktop` Electron shell, `dsh-shell-product`, `dsh-theme-product`, `tools/builder`, `tools/dsh-client-build`, the website source, and the runtime shell/adapters embedded inside generated standalone desktop clients) is licensed under the following terms:
+
+1. **Personal & Noncommercial Use (Free)**: Licensed free of charge under the **PolyForm Noncommercial License 1.0.0** (verbatim legal text below) for personal use, hobby projects, academic research, and 100% free, non-paywalled open-source/community sharing, provided you retain this `LICENSE`, `COMMERCIAL-LICENSE.md`, `THIRD_PARTY_NOTICES.md`, and the `Required Notice:` line above.
+2. **Additional Permission — Small Internal Team Grant (Free, ≤ 20 Users)**: As an explicit additional permission granted by the copyright holder **OctoLab (Octo-o-o-o)**, a company or commercial organization may use `dsh-self` and deploy desktop clients packaged with `dsh-self` **free of charge strictly for internal use by its own employees/contractors**, provided that:
+   - Total internal users across the company and its affiliated entities do **not exceed 20 users (≤ 20)**;
+   - The packaged clients are **strictly internal** and are **not** sold, licensed, leased, bundled into a paid product/service, or delivered to external customers for compensation; and
+   - All copyright notices, `LICENSE`, `COMMERCIAL-LICENSE.md`, and `THIRD_PARTY_NOTICES.md` are retained intact.
+3. **Commercial License (Paid Authorization Required)**: A prior written **OctoLab Commercial License** is required for any of the following:
+   - **Internal Company Use Exceeding 20 Users (> 20)**: Organizations deploying `dsh-self` or clients packaged with `dsh-self` to more than 20 internal users;
+   - **Selling or Monetizing Packaged Clients**: Selling, offering by subscription/seat/one-time fee, or bundling standalone desktop clients generated with `dsh-self` (including on e-commerce platforms, SaaS websites, paid communities, courses, or hardware bundles);
+   - **Paid Outsourcing, Consulting & Client Delivery**: Packaging custom desktop clients with `dsh-self` for external clients as part of a paid project, agency work, or system integration;
+   - **White-Labeling or Commercial Platform Embedding**: Removing `dsh-self` notices/attribution or embedding `dsh-self` components into a commercial product or service.
+
+For commercial licensing inquiries, contact **OctoLab**: `octoooo@octoooo.com` (see [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md)).
+
+> **Third-Party Dependencies & Community Plugins**: Upstream open-source components (such as DeepSeek Harness under MIT, Electron, sharp, docx-preview, and DOMPurify) remain under their respective licenses—see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). Any third-party community DSH plugins you choose to bundle into a generated client are governed solely by their own authors' licenses and are **not** covered by an OctoLab Commercial License.
+
+## 双重许可摘要（简体中文）
+
+**dsh-self**（含 `dsh-self-studio` 插件、`@dsh-self/product-spec`、`@dsh-self/catalog`、`@dsh-self/adapters`、`templates/desktop` 桌面壳模板、`dsh-shell-product`、`dsh-theme-product`、`tools/builder`、`tools/dsh-client-build`、官网源码，以及**嵌入在所打包独立桌面客户端内的原创壳运行时与适配器代码**）采用**「个人与非商用免费 + 20 人以内公司内部免费 + 超规模内部使用及对外商业售卖付费授权」**许可模式：
+
+1. **个人与非商业使用（免费）**：个人自用、免费无门槛分享给亲友或开源社区、学术研究与学习测试，均免费适用下方 **PolyForm Noncommercial License 1.0.0（PolyForm 非商业许可协议 1.0.0）**；分发时须完整保留本 `LICENSE`、`COMMERCIAL-LICENSE.md`、`THIRD_PARTY_NOTICES.md` 及上方 `Required Notice:` 声明。
+2. **附加许可 —— 20 人以内公司内部免费使用（免费，≤ 20 人）**：版权方 **OctoLab (Octo-o-o-o)** 在本协议之外特别授予以下附加许可：商业公司或团队在同时满足下列条件时，可**免费**在公司内部使用 `dsh-self` 及由其打包生成的独立桌面客户端，无需另行申请商业授权：
+   - 公司及其关联主体内的总使用人数**不超过 20 人（≤ 20 人）**；
+   - 所打包客户端**仅限公司内部自用**，不对外售卖、不向外部客户收费交付、不捆绑于付费商品或付费服务中；
+   - 保留全部版权声明、`LICENSE`、`COMMERCIAL-LICENSE.md` 与 `THIRD_PARTY_NOTICES.md`。
+3. **商业授权（必须事先联系作者获取书面授权）**：以下任一情形均须事先联系作者取得 **OctoLab 商业授权**：
+   - **公司内部使用超过 20 人（> 20 人）**：企业或机构内部使用 `dsh-self` 或其打包客户端的总人数超过 20 人；
+   - **打包独立客户端对外售卖或变现**：将使用 `dsh-self` 打包生成的独立桌面客户端对外买断销售、按席位/订阅收费、设付费下载/会员门槛，或捆绑在课程、硬件、服务中变现（含官网、独立站、淘宝、闲鱼、社群等任何渠道）；
+   - **有偿外包与甲方定制交付**：外包团队、集成商或个人接单为外部客户定制打包桌面客户端并收取开发/交付费用；
+   - **白标去署名或商业平台集成**：去除 `dsh-self` 版权声明或将本项目核心组件嵌入商业软件/SaaS 平台对外提供服务。
+
+如需洽谈超 20 人企业内部授权或对外商业授权，请发送邮件至 **OctoLab**：`octoooo@octoooo.com`（完整对照表与常见问题见 [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md)）。
+
+> **第三方依赖与社区插件声明**：本项目使用的上游开源组件（如 MIT 协议的 DeepSeek Harness、Electron、sharp、docx-preview、DOMPurify 等）仍受各自原有协议约束，详见 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)。若你在打包客户端时引入第三方社区 DSH 插件，该社区插件的授权由其原作者协议决定，**不包含**在 OctoLab 商业授权范围内。
+
+---
+
+# PolyForm Noncommercial License 1.0.0
+
+<https://polyformproject.org/licenses/noncommercial/1.0.0>
+
+## Acceptance
+
+In order to get any license under these terms, you must agree
+to them as both strict obligations and conditions to all
+your licenses.
+
+## Copyright License
+
+The licensor grants you a copyright license for the
+software to do everything you might do with the software
+that would otherwise infringe the licensor's copyright
+in it for any permitted purpose.  However, you may
+only distribute the software according to [Distribution
+License](#distribution-license) and make changes or new works
+based on the software according to [Changes and New Works
+License](#changes-and-new-works-license).
+
+## Distribution License
+
+The licensor grants you an additional copyright license
+to distribute copies of the software.  Your license
+to distribute covers distributing the software with
+changes and new works permitted by [Changes and New Works
+License](#changes-and-new-works-license).
+
+## Notices
+
+You must ensure that anyone who gets a copy of any part of
+the software from you also gets a copy of these terms or the
+URL for them above, as well as copies of any plain-text lines
+beginning with `Required Notice:` that the licensor provided
+with the software.  For example:
+
+> Required Notice: Copyright Yoyodyne, Inc. (http://example.com)
+
+## Changes and New Works License
+
+The licensor grants you an additional copyright license to
+make changes and new works based on the software for any
+permitted purpose.
+
+## Patent License
+
+The licensor grants you a patent license for the software that
+covers patent claims the licensor can license, or becomes able
+to license, that you would infringe by using the software.
+
+## Noncommercial Purposes
+
+Any noncommercial purpose is a permitted purpose.
+
+## Personal Uses
+
+Personal use for research, experiment, and testing for
+the benefit of public knowledge, personal study, private
+entertainment, hobby projects, amateur pursuits, or religious
+observance, without any anticipated commercial application,
+is use for a permitted purpose.
+
+## Noncommercial Organizations
+
+Use by any charitable organization, educational institution,
+public research organization, public safety or health
+organization, environmental protection organization,
+or government institution is use for a permitted purpose
+regardless of the source of funding or obligations resulting
+from the funding.
+
+## Fair Use
+
+You may have "fair use" rights for the software under the
+law.  These terms do not limit them.
+
+## No Other Rights
+
+These terms do not allow you to sublicense or transfer any of
+your licenses to anyone else, or prevent the licensor from
+granting licenses to anyone else.  These terms do not imply
+any other licenses.
+
+## Patent Defense
+
+If you make any written claim that the software infringes or
+contributes to infringemen of any patent, your patent license
+for the software granted under these terms ends immediately. If
+your company makes such a claim, your patent license ends
+immediately for work on behalf of your company.
+
+## Violations
+
+The first time you are notified in writing that you have
+violated any of these terms, or done anything with the software
+not covered by your licenses, your licenses can nonetheless
+continue if you come into full compliance with these terms,
+and take practical steps to correct past violations, within
+32 days of receiving notice.  Otherwise, all your licenses
+end immediately.
+
+## No Liability
+
+***As far as the law allows, the software comes as is, without
+any warranty or condition, and the licensor will not be liable
+to you for any damages arising out of these terms or the use
+or nature of the software, under any legal claim.***
+
+## Definitions
+
+The **licensor** is the individual or entity offering these
+terms, and the **software** is the software the licensor makes
+available under these terms.
+
+**You** refers to the individual or entity agreeing to these
+terms.
+
+**Your company** is any legal entity, sole proprietorship,
+or other kind of organization that you work for, plus all
+organizations that have control over, are under the control of,
+or are under common control with that organization.  **Control**
+means ownership of substantially all the assets of an entity,
+or the power to direct its management and policies by vote,
+contract, or otherwise.  Control can be direct or indirect.
+
+**Your licenses** are all the licenses granted to you for the
+software under these terms.
+
+**Use** means anything you do with the software requiring one
+of your licenses.

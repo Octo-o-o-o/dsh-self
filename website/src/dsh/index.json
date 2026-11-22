@@ -1,0 +1,74 @@
+{
+  "format": 1,
+  "title": {
+    "en": "dsh-self Plugin Index",
+    "zh": "dsh-self 插件源"
+  },
+  "description": {
+    "en": "Official custom plugin index for dsh-self Studio — generate isolated standalone desktop clients inside DeepSeek Harness.",
+    "zh": "dsh-self Studio 官方自定义插件索引 —— 在 DeepSeek Harness 中生成带独立图标与数据目录的专属桌面客户端。"
+  },
+  "metadata": {
+    "categories": {
+      "desktop-builder": {
+        "title": {
+          "en": "Desktop Client Builder",
+          "zh": "桌面客户端生成"
+        }
+      }
+    },
+    "labels": {
+      "isolated-desktop": {
+        "title": {
+          "en": "Standalone Desktop",
+          "zh": "独立桌面软件"
+        }
+      },
+      "official-dsh-compat": {
+        "title": {
+          "en": "dsh 0.2.2-rc.5",
+          "zh": "dsh 0.2.2-rc.5 兼容"
+        }
+      }
+    }
+  },
+  "plugins": [
+    {
+      "name": "dsh-self-studio",
+      "title": {
+        "en": "Build My Client (dsh-self Studio)",
+        "zh": "制作我的客户端 (dsh-self Studio)"
+      },
+      "description": {
+        "en": "Turn a workflow description and optional visual references into an isolated, standalone desktop client with its own icon, data directory, and pinned plugin lock.",
+        "zh": "用一句话需求与设计参考，在官方 DSH 中自动选型插件、1:1 隔离热预览并打包带独立图标与数据目录的专属桌面客户端。"
+      },
+      "icon": "icons/dsh-self-studio.svg",
+      "author": "Octo-o-o-o",
+      "homepage": "https://dsh-self.octoooo.com/",
+      "repository": {
+        "url": "https://github.com/Octo-o-o-o/dsh-self",
+        "directory": "packages/dsh-self-studio"
+      },
+      "metadata": {
+        "category": "desktop-builder",
+        "labels": [
+          "isolated-desktop",
+          "official-dsh-compat"
+        ]
+      },
+      "versions": [
+        {
+          "version": "0.1.0",
+          "publishTimestamp": 1795267200,
+          "source": {
+            "type": "npm"
+          },
+          "engines": {
+            "dsh": ">=0.2.2-rc.1 <0.3.0"
+          }
+        }
+      ]
+    }
+  ]
+}

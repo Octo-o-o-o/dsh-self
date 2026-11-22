@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dsh-self.octoooo.com/sitemap.xml

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "appVersion": "0.1.0",
+  "dataFormatVersion": 1,
+  "dshSessionFormatVersion": 3,
+  "identity": {
+    "productId": "22222222-2222-4222-8222-222222222222",
+    "internalSlug": "qinghe-desig-22222222",
+    "appId": "app.dshself.u22222222",
+    "appUserModelId": "app.dshself.u22222222",
+    "nsisGuid": "22222222-2222-4222-8222-222222222222",
+    "executableName": "qinghe-desig-22222222",
+    "userDataDirName": "qinghe-desig-22222222"
+  },
+  "displayName": {
+    "zh": "青禾设计室",
+    "en": "Qinghe Design"
+  },
+  "chromeColors": {
+    "light": {
+      "backgroundColor": "#f1f3fb",
+      "titleBarColor": "#f1f3fb",
+      "symbolColor": "#0f172a"
+    },
+    "dark": {
+      "backgroundColor": "#171e36",
+      "titleBarColor": "#171e36",
+      "symbolColor": "#f8fafc"
+    }
+  }
+}
