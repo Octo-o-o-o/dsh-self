@@ -8,6 +8,7 @@ import {
   type BuildReceipt,
 } from '@dsh-self/product-spec'
 import { generateProductIcons } from '../icon-gen.js'
+import { ensureExternalPluginPayloads } from '../external-plugins.js'
 import { generateParameterizedNsisInclude } from '../nsis-generator.js'
 import { buildProfileSeed } from '../seed-builder.js'
 import { sha256File, type ValidatedBuildSnapshot } from '../validate-and-snapshot.js'
@@ -77,6 +78,7 @@ export interface BuildWin32InstallerOptions {
   readonly outDir: string
   readonly jobId: string
   readonly extraSeedSalt?: string
+  readonly pluginCacheDir?: string
 }
 
 /**
@@ -133,11 +135,13 @@ export async function buildWin32Installer(options: BuildWin32InstallerOptions): 
   writeFileSync(path.join(productOutDir, 'plugins.win32-x64.lock.json'), `${JSON.stringify(lock, undefined, 2)}\n`)
   cpSync(icons.png256Path, path.join(productOutDir, 'icon.png'))
 
+  await ensureExternalPluginPayloads(lock, { pluginCacheDir: options.pluginCacheDir })
   const seed = buildProfileSeed({
     spec,
     lock,
     outDir: productOutDir,
     extraSeedSalt: options.extraSeedSalt,
+    pluginCacheDir: options.pluginCacheDir,
   })
 
   // 5. Generate parameterized NSIS installer.nsh (UTF-8 BOM for NSIS Unicode) & temporary package.json (`name = internalSlug`!)
@@ -168,7 +172,7 @@ export async function buildWin32Installer(options: BuildWin32InstallerOptions): 
       appId: spec.identity.appId,
       productName: spec.brand.displayName.zh || spec.brand.displayName.en,
       electronVersion: '44.11.5',
-      compression: 'store',
+      compression: 'normal',
       directories: {
         output: distOutDir,
       },

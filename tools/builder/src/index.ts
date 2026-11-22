@@ -8,6 +8,7 @@ import { stageDarwinAppBundle } from './stagers/darwin.js'
 
 export * from './validate-and-snapshot.js'
 export * from './icon-gen.js'
+export * from './external-plugins.js'
 export * from './seed-builder.js'
 export * from './nsis-generator.js'
 export * from './base-shell.js'
@@ -25,6 +26,7 @@ export interface RunClientBuildOptions {
   readonly jobId?: string
   readonly iconSourcePath?: string
   readonly extraSeedSalt?: string
+  readonly pluginCacheDir?: string
 }
 
 /**
@@ -53,6 +55,7 @@ export async function runClientBuild(options: RunClientBuildOptions): Promise<Bu
       outDir: options.outDir,
       jobId,
       extraSeedSalt: options.extraSeedSalt,
+      pluginCacheDir: options.pluginCacheDir,
     })
   }
 
@@ -62,6 +65,7 @@ export async function runClientBuild(options: RunClientBuildOptions): Promise<Bu
       outDir: options.outDir,
       jobId,
       baseShellDir: options.baseShellDir,
+      pluginCacheDir: options.pluginCacheDir,
     })
     return receipt
   }
@@ -71,6 +75,7 @@ export async function runClientBuild(options: RunClientBuildOptions): Promise<Bu
     target: options.target,
     outDir: options.outDir,
     jobId,
+    pluginCacheDir: options.pluginCacheDir,
   })
   return receipt
 }

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { zipSync } from 'fflate'
+import { strFromU8, unzipSync, zipSync } from 'fflate'
 import {
   analyzeBidDocument,
   buildBidResponseDocx,
@@ -14,6 +14,21 @@ import {
 const FIXTURES = path.resolve('fixtures/docx')
 
 describe('bid-docx adapter security, parsing, sandbox viewer & round-trip export', () => {
+  it('leaves bid responses pending and retains a user-written response from an older project', () => {
+    const parsed = parseAndSanitizeDocx(readFileSync(path.join(FIXTURES, 'valid-bid.docx')))
+    const analysis = analyzeBidDocument(parsed, { projectId: 'test', fileName: '同名标书.docx' })
+    const score = analysis.scoringItems[0]!
+    const oldText = `【逐条响应草稿】针对「${score.title.slice(0, 60)}」，我方完全满足要求并附证明材料。`
+    const exportWith = (responseDraft: string) => {
+      const bytes = buildBidResponseDocx({ ...analysis, scoringItems: [{ ...score, responseDraft }] })
+      return strFromU8(unzipSync(bytes)['word/document.xml']!)
+    }
+    expect(score.responseDraft).toContain('待填写')
+    expect(exportWith(oldText)).toContain('待填写')
+    expect(exportWith(oldText)).not.toContain('我方完全满足')
+    expect(exportWith('待负责人核对附件编号 A12')).toContain('待负责人核对附件编号 A12')
+  })
+
   it('parses valid bid DOCX, ignores <w:del>, extracts anchors, and exports verified reopenable DOCX', () => {
     const bytes = new Uint8Array(readFileSync(path.join(FIXTURES, 'valid-bid.docx')))
     const parsed = parseAndSanitizeDocx(bytes)

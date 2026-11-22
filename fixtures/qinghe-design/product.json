@@ -73,9 +73,7 @@
     "design.saveAnnotations",
     "design.exportAnnotatedPng"
   ],
-  "optionalActions": [
-    "design.openPrototypeStudio"
-  ],
+  "optionalActions": [],
   "acceptance": {
     "fixtures": [
       "fixtures/images/exif-rotated-6.jpg",

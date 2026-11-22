@@ -70,19 +70,30 @@ test('custom DSH plugin index conforms to official format:1 contract', async () 
   assert.equal(raw.format, 1);
   assert.equal(typeof raw.title.en, 'string');
   assert.equal(typeof raw.title.zh, 'string');
-  assert.equal(raw.plugins.length, 1);
+  assert.equal(raw.plugins.length, 3);
 
-  const plugin = raw.plugins[0];
-  assert.equal(plugin.name, PLUGIN_NAME);
-  assert.equal(plugin.homepage, `${CANONICAL_ORIGIN}/`);
-  assert.equal(plugin.versions[0].version, PLUGIN_VERSION);
-  assert.equal(plugin.versions[0].engines.dsh, '>=0.2.2-rc.1 <0.3.0');
-  assert.equal(plugin.versions[0].source.type, 'npm');
+  const byName = new Map(raw.plugins.map((p) => [p.name, p]));
+  const studio = byName.get(PLUGIN_NAME);
+  assert.ok(studio, 'index must include dsh-self-studio');
+  assert.equal(studio.homepage, `${CANONICAL_ORIGIN}/`);
+  assert.equal(studio.versions[0].version, PLUGIN_VERSION);
+  assert.equal(studio.versions[0].engines.dsh, '>=0.2.2-rc.1 <0.3.0');
+  assert.equal(studio.versions[0].source.type, 'npm');
 
-  const iconPath = path.join(dist, 'dsh', plugin.icon);
-  const iconStat = await stat(iconPath);
-  assert.ok(iconStat.isFile(), 'plugin index icon must exist');
-  assert.ok(iconStat.size <= 32 * 1024, 'plugin index icon must be <= 32 KiB');
+  for (const extraName of ['gpt-image-design', 'chatgpt-pro-research']) {
+    const extra = byName.get(extraName);
+    assert.ok(extra, `index must include ${extraName}`);
+    assert.equal(extra.versions[0].version, '0.3.6');
+    assert.equal(extra.versions[0].engines.dsh, '>=0.2.1-rc.3 <0.3.0');
+    assert.equal(extra.versions[0].source.type, 'npm');
+  }
+
+  for (const plugin of raw.plugins) {
+    const iconPath = path.join(dist, 'dsh', plugin.icon);
+    const iconStat = await stat(iconPath);
+    assert.ok(iconStat.isFile(), `plugin index icon must exist: ${plugin.icon}`);
+    assert.ok(iconStat.size <= 32 * 1024, `plugin index icon must be <= 32 KiB: ${plugin.icon}`);
+  }
 });
 
 test('worker attaches strict security, HSTS, COOP/CORP, caching and JSON CORS headers', async () => {

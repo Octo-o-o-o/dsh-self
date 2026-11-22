@@ -8,6 +8,7 @@ import {
   type SupportedTarget,
 } from '@dsh-self/product-spec'
 import { generateProductIcons } from '../icon-gen.js'
+import { ensureExternalPluginPayloads } from '../external-plugins.js'
 import { buildProfileSeed } from '../seed-builder.js'
 import { sha256File, type ValidatedBuildSnapshot } from '../validate-and-snapshot.js'
 
@@ -84,6 +85,7 @@ export async function stageDarwinAppBundle(options: {
   readonly target: Extract<SupportedTarget, 'darwin-arm64' | 'darwin-x64'>
   readonly outDir: string
   readonly jobId: string
+  readonly pluginCacheDir?: string
 }): Promise<{ readonly plan: DarwinStagedPlan; readonly receipt: BuildReceipt }> {
   const { spec, lock, identity } = options.snapshot
   const slug = spec.identity.internalSlug
@@ -118,7 +120,8 @@ export async function stageDarwinAppBundle(options: {
   writeFileSync(path.join(productDir, 'identity.json'), `${JSON.stringify(identity, undefined, 2)}\n`)
   writeFileSync(path.join(productDir, `plugins.${options.target}.lock.json`), `${JSON.stringify(lock, undefined, 2)}\n`)
 
-  const seed = buildProfileSeed({ spec, lock, outDir: productDir })
+  await ensureExternalPluginPayloads(lock, { pluginCacheDir: options.pluginCacheDir })
+  const seed = buildProfileSeed({ spec, lock, outDir: productDir, pluginCacheDir: options.pluginCacheDir })
 
   const helperNames = [
     `${slug} Helper.app`,

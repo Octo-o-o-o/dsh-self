@@ -8,10 +8,12 @@ import http from 'node:http'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import {
+  PlatformLockSchema,
   ProductSpecSchema,
   WIDGET_CATALOG,
   deriveThemeTokens,
   escapeHtml,
+  type PlatformLock,
   type ProductSpec,
 } from '@dsh-self/product-spec'
 import {
@@ -26,6 +28,7 @@ interface PreviewWorkerConfig {
   readonly projectId: string
   readonly previewDir: string
   readonly specPath: string
+  readonly lockPath?: string
   readonly preferredPort?: number
 }
 
@@ -58,7 +61,7 @@ function createSampleBidDocx(): Uint8Array {
   })
 }
 
-function renderPreviewHtml(spec: ProductSpec, revisionNonce: number): string {
+function renderPreviewHtml(spec: ProductSpec, revisionNonce: number, lock?: PlatformLock | null): string {
   const derived = deriveThemeTokens(spec.theme.seeds)
   const l = derived.clampedSeeds.light
   const d = derived.clampedSeeds.dark
@@ -107,6 +110,17 @@ function renderPreviewHtml(spec: ProductSpec, revisionNonce: number): string {
 
   const capabilityRows = [...spec.requiredActions, ...spec.optionalActions]
     .map((a) => `<div class="item"><strong>${escapeHtml(a)}</strong><span class="muted">已内置并随客户端锁定（只读）</span></div>`)
+    .join('')
+  const lockedPluginRows = (lock?.plugins ?? [])
+    .map((p) => {
+      const sourceLabel =
+        p.sourceKind === 'builtin'
+          ? '内置适配'
+          : p.sourceKind === 'local-installed'
+            ? '本机 DSH 手动指定'
+            : `外置插件 (${p.sourceKind})`
+      return `<div class="item"><strong>${escapeHtml(p.packageName)}@${escapeHtml(p.version)}</strong><span class="muted">${escapeHtml(sourceLabel)} · ${escapeHtml(p.runtimeKind)}</span></div>`
+    })
     .join('')
 
   const layoutClass = escapeHtml(spec.home.layout)
@@ -239,6 +253,7 @@ body { margin: 0; font: 13.5px/1.5 "Segoe UI", system-ui, sans-serif; background
           <div class="card-hd"><h3>已装能力</h3><span class="pill">已锁定（防误改）</span></div>
           <p class="muted">预览和成品中已关闭插件市场修改，避免误装导致冲突。</p>
           ${capabilityRows}
+          ${lockedPluginRows ? `<div class="card-hd" style="margin-top:12px;"><h3>锁定插件清单 (${lock?.plugins.length ?? 0})</h3></div>${lockedPluginRows}` : ''}
         </div>
       </div>
 
@@ -307,12 +322,22 @@ async function main(): Promise<void> {
   mkdirSync(config.previewDir, { recursive: true })
   let revisionNonce = 1
   const loadSpec = (): ProductSpec => ProductSpecSchema.parse(JSON.parse(readFileSync(config.specPath, 'utf8')))
+  const loadLock = (): PlatformLock | null => {
+    if (!config.lockPath || !existsSync(config.lockPath)) return null
+    try {
+      return PlatformLockSchema.parse(JSON.parse(readFileSync(config.lockPath, 'utf8')))
+    } catch {
+      return null
+    }
+  }
   let currentSpec = loadSpec()
+  let currentLock = loadLock()
   const sseClients = new Set<http.ServerResponse>()
 
   const notifyReload = (): void => {
     try {
       currentSpec = loadSpec()
+      currentLock = loadLock()
       revisionNonce += 1
       for (const client of sseClients) {
         client.write(`event: spec-updated\ndata: ${JSON.stringify({ revision: currentSpec.revision, nonce: revisionNonce })}\n\n`)
@@ -383,9 +408,12 @@ async function main(): Promise<void> {
       res.writeHead(200, {
         'Content-Type': 'text/html; charset=utf-8',
         'Cache-Control': 'no-store',
-        'Content-Security-Policy': "frame-ancestors 'self' http://127.0.0.1:* http://localhost:*",
+        // Official DeepSeek Harness Desktop serves its renderer from `dsh-app://app`,
+        // while `dsh web` and local dev carriers use loopback HTTP(S).
+        'Content-Security-Policy':
+          "frame-ancestors 'self' dsh-app: http://127.0.0.1:* http://localhost:* https://127.0.0.1:* https://localhost:*",
       })
-      res.end(renderPreviewHtml(currentSpec, revisionNonce))
+      res.end(renderPreviewHtml(currentSpec, revisionNonce, currentLock))
       return
     }
     res.writeHead(404)

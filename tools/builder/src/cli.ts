@@ -29,6 +29,8 @@ async function main(): Promise<void> {
   const productPath = args.product
   const lockPath = args.lock
   const target = (args.target ?? 'win32-x64') as SupportedTarget
+  // electron-builder otherwise selects 7z level 9 even for normal compression.
+  if (target === 'win32-x64') process.env.ELECTRON_BUILDER_COMPRESSION_LEVEL ??= '1'
   const outDir = args.out
   if (!productPath || !lockPath || !outDir) {
     throw new Error('Usage: --product <file> --lock <file> --target <target> --out <dir> [--base-shell <dir>]')
@@ -43,6 +45,7 @@ async function main(): Promise<void> {
     jobId: args['job-id'],
     iconSourcePath: args.icon,
     extraSeedSalt: args['seed-salt'],
+    pluginCacheDir: args['plugin-cache'],
   })
   console.log(`[dsh-self-builder] Built artifact: ${receipt.artifactPath}`)
   console.log(`[dsh-self-builder] SHA-256:        ${receipt.artifactSha256}`)

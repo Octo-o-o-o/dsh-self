@@ -188,39 +188,58 @@ export class DshModelBridge {
 
     // Deterministic smart local expander for ANY prompt
     const plan = planActionsFromTrustedInputs({ userPrompt: clean })
-    const isBid = /标书|招标|投标|评分/i.test(clean)
-    const isDesign = /设计|画布|批注|海报|图片|原图|修图/i.test(clean)
+    const isBid = plan.requiredActions.some((a) => a.startsWith('bid.'))
+    const isResearch = plan.requiredActions.some((a) => a.startsWith('research.'))
+    const isDesign = plan.requiredActions.some((a) => a.startsWith('design.'))
+    const domainCount = [isBid, isResearch, isDesign].filter(Boolean).length
     const explicitQuote = clean.match(/[「《"“]([^」》"”]{2,14})[」》"”]/)?.[1]
-    const nameZh = explicitQuote || (isBid ? '青禾投标' : isDesign ? '青禾设计室' : guessClientNameZh(clean))
-    const nameEn = isBid ? 'Qinghe Bids' : isDesign ? 'Qinghe Design' : 'My Workbench'
+    const nameZh = explicitQuote || (domainCount >= 2 ? plan.suggestedName.zh : isBid ? '青禾投标' : isResearch ? '深度调研工作台' : isDesign ? plan.suggestedName.zh : guessClientNameZh(clean))
+    const nameEn = domainCount >= 2 ? plan.suggestedName.en : isBid ? 'Qinghe Bids' : isResearch ? 'Pro Research Desk' : isDesign ? plan.suggestedName.en : 'My Workbench'
 
-    const coreFeatures = isBid
+    const coreFeatures = domainCount >= 2
       ? [
-          '导入本地招标 DOCX 文件，自动提取截止日期、评分项与缺失资质',
-          '拦截扫描件与异常文件，支持原文定位查看',
-          '一键导出逐条响应表 Word（DOCX）',
-          '独立工作区与本地数据存储，支持随时配置 AI 辅助起草',
+          ...(isBid ? ['导入本地招标 DOCX 文件，提取截止日期、评分项与缺失资质，一键导出逐条响应表'] : []),
+          ...(plan.requiredActions.includes('design.importImage') ? ['左中右三栏位图画布批注，自动校正旋转方向并高清导出 PNG'] : []),
+          ...(plan.requiredActions.includes('design.openImageDesign') ? ['内置 GPT-Image Design（v0.3.6）支持 OpenAI 兼容生图 API 或 ChatGPT 网页出图与单文件 HTML Demo'] : []),
+          ...(isResearch ? ['内置 ChatGPT Pro Research（v0.3.6）支持可恢复多轮调研、自动判据裁决与 report.md 本地交付'] : []),
+          '独立桌面图标、独立数据目录与隔离浏览器配置，所有选定插件均可直接打进安装包',
         ]
-      : isDesign
+      : isBid
         ? [
-            '左中右三栏：左侧项目列表、中间图片画布、右侧批注属性',
-            '支持点击画布添加精准批注，自动校正手机拍照旋转方向',
-            '支持超长图流畅预览与高清 PNG 导出',
-            '可选共存 AI 原型画框，独立工作区不串数据',
+            '导入本地招标 DOCX 文件，自动提取截止日期、评分项与缺失资质',
+            '拦截扫描件与异常文件，支持原文定位查看',
+            '一键导出逐条响应表 Word（DOCX）',
+            '独立工作区与本地数据存储，支持随时配置 AI 辅助起草',
           ]
-        : [
-            `围绕「${clean.slice(0, 36)}」打造专属首页工作台`,
-            '常用任务与最近文件集中展示，打开即用',
-            '独立桌面图标、独立工作区与独立模型配置',
-            '本地优先运行，支持随时添加或切换业务插件',
-          ]
+        : isResearch
+          ? [
+              '内置 ChatGPT Pro Research（v0.3.6）插件与 pro-research 技能，支持有界多轮调研与自动判据裁决',
+              '独立隔离的 Chrome 登录态与本地记录目录，每轮问答、裁决与宿主交付稿 report.md 完整落盘',
+              '支持中断恢复、人工核对提交状态、续问追问与侧边栏主题进度总览',
+              '可选扩展 GPT-Image Design 面板用于调研配图与原型方案探索',
+            ]
+          : isDesign
+            ? [
+                '左中右三栏：左侧项目列表、中间图片画布、右侧批注属性',
+                '支持点击画布添加精准批注，自动校正手机拍照旋转方向与超长图高清 PNG 导出',
+                '可选集成 GPT-Image Design（v0.3.6），支持 OpenAI 兼容生图 API 或 ChatGPT 网页出图与单文件 HTML Demo',
+                '支持关窗重开批注，独立工作区不串数据',
+              ]
+            : [
+                `围绕「${clean.slice(0, 36)}」打造专属首页工作台`,
+                '常用任务与最近文件集中展示，打开即用',
+                '独立桌面图标、独立工作区与独立模型配置',
+                '本地优先运行，支持随时添加或切换业务插件',
+              ]
 
     const expandedPrompt = [
       `客户端名称：「${nameZh}」（独立桌面客户端）`,
       `核心目标：${clean}`,
       `主要功能：`,
       ...coreFeatures.map((f, i) => `${i + 1}. ${f}`),
-      `使用与隐私要求：纯本地优先运行，不强制联网账号；保留独立工作区与历史记录，方便直接安装给本人或团队成员使用。`,
+      isResearch || plan.requiredActions.includes('design.openImageDesign')
+        ? `连接与边界说明：本地文件能力无需外网账号；外置 AI 生图/调研支持独立隔离的数据目录与浏览器配置（网页通道受页面改版与风控影响，生图 API 通道长期稳定）。`
+        : `使用与隐私要求：纯本地优先运行，不强制联网账号；保留独立工作区与历史记录，方便直接安装给本人或团队成员使用。`,
     ].join('\n')
 
     return {
@@ -228,7 +247,15 @@ export class DshModelBridge {
       suggestedNameZh: nameZh,
       suggestedNameEn: nameEn,
       summary: plan.role,
-      targetUsers: isBid ? '投标专员、售前与招投标团队' : isDesign ? '平面/UI 设计师与视觉评审团队' : '希望把日常工作流固化为独立软件的个人或小团队',
+      targetUsers: domainCount >= 2
+        ? '希望把多项核心能力组合为一个独立桌面客户端的业务与技术团队'
+        : isBid
+          ? '投标专员、售前与招投标团队'
+          : isResearch
+            ? '产品经理、技术架构师与行业研究分析师'
+            : isDesign
+              ? '平面/UI 设计师与视觉评审团队'
+              : '希望把日常工作流固化为独立软件的个人或小团队',
       coreFeatures,
       modelUsed: 'local-fallback',
       modelLabel: this.getStatus().label,
@@ -239,59 +266,217 @@ export class DshModelBridge {
   generateBlueprints(prompt: string, clarifications?: Readonly<Record<string, string>>): readonly BlueprintVariant[] {
     const plan = planActionsFromTrustedInputs({ userPrompt: prompt, clarifications })
     const isBid = plan.requiredActions.some((a) => a.startsWith('bid.'))
+    const isResearch = plan.requiredActions.some((a) => a.startsWith('research.'))
     const isDesign = plan.requiredActions.some((a) => a.startsWith('design.'))
+    const wantsImageDesign = plan.requiredActions.includes('design.openImageDesign')
+    const domainCount = [isBid, isDesign, isResearch].filter(Boolean).length
     const baseNameZh = plan.suggestedName.zh
     const baseNameEn = plan.suggestedName.en
+
+    if (domainCount >= 2) {
+      const hasCanvas = plan.requiredActions.includes('design.importImage')
+      const standardLayout: LayoutPreset = hasCanvas ? 'three-pane' : 'dashboard-grid'
+      const standardSections: WidgetId[] = [...plan.sections]
+      const liteSections: WidgetId[] = standardSections.slice(0, Math.min(3, standardSections.length))
+      const allDeliverableRequired: ActionId[] = [...new Set<ActionId>([
+        ...plan.requiredActions,
+        'bid.importRequirements',
+        'bid.exportResponseDocx',
+        'design.importImage',
+        'design.saveAnnotations',
+        'design.exportAnnotatedPng',
+        'design.openImageDesign',
+        'research.openProResearch',
+      ])]
+      const allDeliverableOptional: ActionId[] = allDeliverableRequired.includes('calendar.addDeadline')
+        ? []
+        : ['calendar.addDeadline']
+      return [
+        {
+          id: 'lite',
+          tierLabel: '方案 A · 精简融合工作台',
+          badge: '最轻便',
+          subtitle: '保留你点名的跨场景核心能力，单栏聚焦无干扰',
+          suggestedNameZh: baseNameZh,
+          suggestedNameEn: baseNameEn,
+          layout: 'single-column',
+          sections: liteSections,
+          requiredActions: [...plan.requiredActions],
+          optionalActions: [],
+          accentHex: '#0f766e',
+          iconPreset: 'workbench-grid',
+          localOnly: plan.localOnly,
+          highlights: [
+            `保留全部 ${plan.requiredActions.length} 项核心请求动作`,
+            '单栏清爽视图，不带多余模块',
+            '下一步可自由增删白名单或本机已装 DSH 插件',
+          ],
+        },
+        {
+          id: 'standard',
+          tierLabel: '方案 B · 标准自定义融合版',
+          badge: '推荐',
+          subtitle: '完整覆盖你组合的多场景工作流与截止提醒，所选插件全部可直接打进安装包',
+          suggestedNameZh: baseNameZh,
+          suggestedNameEn: baseNameEn,
+          layout: standardLayout,
+          sections: standardSections,
+          requiredActions: [...plan.requiredActions],
+          optionalActions: [...new Set<ActionId>([...plan.optionalActions, 'calendar.addDeadline'])].filter(
+            (a) => !plan.requiredActions.includes(a),
+          ),
+          accentHex: '#1d4ed8',
+          iconPreset: 'workbench-grid',
+          localOnly: plan.localOnly,
+          highlights: [
+            '不丢弃任何跨场景需求（投标 / 画布批注 / AI 生图 / Pro 调研可自由组合）',
+            '已附带本地离线截止日历与 .ics 导出',
+            '零不可用插件，可直接试运行并打包',
+          ],
+        },
+        {
+          id: 'pro',
+          tierLabel: '方案 C · 全能力交付工作台',
+          badge: '全功能',
+          subtitle: '一次装配全部 5 套已验证可交付插件（标书 + 日历 + 位图批注 + AI 生图 + Pro 多轮调研）',
+          suggestedNameZh: baseNameZh,
+          suggestedNameEn: baseNameEn,
+          layout: 'three-pane',
+          sections: ['deadlines', 'bid-preview', 'design-canvas', 'annotations-panel', 'recent-sessions', 'connections-card'],
+          requiredActions: allDeliverableRequired,
+          optionalActions: allDeliverableOptional,
+          accentHex: '#4f46e5',
+          iconPreset: 'workbench-grid',
+          localOnly: false,
+          highlights: [
+            '内置 3 套离线适配器 + 2 套实测外置插件全部就绪',
+            '下一步仍可手动指定本机已装的其他 DSH 插件',
+            '共享隔离数据目录，全部能力一次打包交付',
+          ],
+        },
+      ]
+    }
+
+    if (isResearch) {
+      return [
+        {
+          id: 'lite',
+          tierLabel: '方案 A · 极简调研助手',
+          badge: '最轻便',
+          subtitle: '单栏聚焦，直接内嵌 Pro Research 面板，专注多轮调研与报告整理',
+          suggestedNameZh: baseNameZh,
+          suggestedNameEn: baseNameEn,
+          layout: 'single-column',
+          sections: ['recent-sessions', 'connections-card'],
+          requiredActions: ['research.openProResearch'],
+          optionalActions: [],
+          accentHex: '#0f766e',
+          iconPreset: 'monogram',
+          localOnly: false,
+          highlights: ['内置 chatgpt-pro-research@0.3.6', '独立隔离 Chrome 登录态与本地报告', '需本机 Chrome + ChatGPT 网页账号'],
+        },
+        {
+          id: 'standard',
+          tierLabel: '方案 B · 标准深度调研台',
+          badge: '推荐',
+          subtitle: '列表+详情布局，串联调研项目、继续工作与连接状态提示',
+          suggestedNameZh: baseNameZh,
+          suggestedNameEn: baseNameEn,
+          layout: 'list-detail',
+          sections: ['project-list', 'recent-sessions', 'connections-card'],
+          requiredActions: ['research.openProResearch'],
+          optionalActions: [],
+          accentHex: '#1d4ed8',
+          iconPreset: 'workbench-grid',
+          localOnly: false,
+          highlights: ['完整多轮调研 + 自动判据裁决 + report.md 交付', '与宿主 ~/.dsh 浏览器配置完全隔离', '可随时按需加装生图设计插件'],
+        },
+        {
+          id: 'pro',
+          tierLabel: '方案 C · 调研 + AI 视觉方案全能台',
+          badge: '全功能',
+          subtitle: '双插件协同：Pro 多轮调研 + GPT-Image Design 生图与单文件 HTML Demo',
+          suggestedNameZh: baseNameZh,
+          suggestedNameEn: baseNameEn,
+          layout: 'dashboard-grid',
+          sections: ['project-list', 'recent-sessions', 'connections-card'],
+          requiredActions: ['research.openProResearch'],
+          optionalActions: ['design.openImageDesign'],
+          accentHex: '#4f46e5',
+          iconPreset: 'workbench-grid',
+          localOnly: false,
+          highlights: ['同时封装 chatgpt-pro-research + gpt-image-design', '共享隔离 Chrome 登录态，支持 API 生图', '两项外置插件均已验证可直接打进安装包'],
+        },
+      ]
+    }
 
     if (isDesign) {
       return [
         {
           id: 'lite',
-          tierLabel: '方案 A · 极简画布版',
+          tierLabel: wantsImageDesign ? '方案 A · 极简 AI 出图设计台' : '方案 A · 极简画布版',
           badge: '最轻便',
-          subtitle: '单栏大画布聚焦，只保留看图与批注，上手零门槛',
+          subtitle: wantsImageDesign
+            ? '单栏聚焦，内置 GPT-Image Design（支持生图 API / ChatGPT 网页出图与 Demo）'
+            : '单栏大画布聚焦，只保留看图与批注，上手零门槛',
           suggestedNameZh: baseNameZh,
           suggestedNameEn: baseNameEn,
           layout: 'single-column',
-          sections: ['design-canvas', 'annotations-panel'],
-          requiredActions: ['design.importImage', 'design.saveAnnotations', 'design.exportAnnotatedPng'],
+          sections: wantsImageDesign ? ['project-list', 'connections-card'] : ['design-canvas', 'annotations-panel'],
+          requiredActions: wantsImageDesign
+            ? ['design.openImageDesign']
+            : ['design.importImage', 'design.saveAnnotations', 'design.exportAnnotatedPng'],
           optionalActions: [],
           accentHex: '#475569',
           iconPreset: 'design-pen',
-          localOnly: true,
-          highlights: ['单栏大图视野', '仅 1 个核心内置插件', '纯本地零外部依赖'],
+          localOnly: !wantsImageDesign,
+          highlights: wantsImageDesign
+            ? ['内置 gpt-image-design@0.3.6 + 画廊与 iframe 预览', '支持 OpenAI 兼容生图 API（长期稳定）', '单包轻量化打包']
+            : ['单栏大图视野', '仅 1 个核心内置插件', '纯本地零外部依赖'],
         },
         {
           id: 'standard',
-          tierLabel: '方案 B · 标准三栏设计台',
+          tierLabel: wantsImageDesign ? '方案 B · AI 生图 + 三栏批注设计台' : '方案 B · 标准三栏设计台',
           badge: '推荐',
-          subtitle: '左项目、中画布、右批注，兼顾多稿件管理与导出',
+          subtitle: wantsImageDesign
+            ? '三栏本地位图批注 + GPT-Image Design 生图与 HTML Demo，一站完成出图、批注与导出'
+            : '左项目、中画布、右批注，兼顾多稿件管理与导出',
           suggestedNameZh: baseNameZh,
           suggestedNameEn: baseNameEn,
           layout: 'three-pane',
           sections: ['project-list', 'design-canvas', 'annotations-panel'],
-          requiredActions: ['design.importImage', 'design.saveAnnotations', 'design.exportAnnotatedPng'],
-          optionalActions: ['design.openPrototypeStudio'],
+          requiredActions: wantsImageDesign
+            ? ['design.importImage', 'design.saveAnnotations', 'design.exportAnnotatedPng', 'design.openImageDesign']
+            : ['design.importImage', 'design.saveAnnotations', 'design.exportAnnotatedPng'],
+          optionalActions: [],
           accentHex: '#0f766e',
           iconPreset: 'design-pen',
-          localOnly: true,
-          highlights: ['经典三栏工作台', '自带项目列表与高清 PNG 导出', '可选共存 AI 原型画框'],
+          localOnly: !wantsImageDesign,
+          highlights: wantsImageDesign
+            ? ['本地超长图批注 PNG 导出 + gpt-image-design@0.3.6', 'API 通道只出图且长期稳定；Web 通道附带 HTML Demo', '全部能力可直接打包进独立安装包']
+            : ['经典三栏工作台', '自带项目列表与高清 PNG 导出', '支持关窗重开批注'],
         },
         {
           id: 'pro',
-          tierLabel: '方案 C · 团队协同专业版',
+          tierLabel: '方案 C · AI 出图与团队协同专业版',
           badge: '全功能',
-          subtitle: '三栏画布 + 继续工作 + 任务看板与随手记，适合团队评审',
+          subtitle: '三栏画布 + GPT-Image Design AI 生图/Demo + 继续工作，可选扩展原型画框与看板',
           suggestedNameZh: baseNameZh,
           suggestedNameEn: baseNameEn,
           layout: 'three-pane',
           sections: ['project-list', 'design-canvas', 'annotations-panel', 'recent-sessions'],
-          requiredActions: ['design.importImage', 'design.saveAnnotations', 'design.exportAnnotatedPng'],
-          optionalActions: ['design.openPrototypeStudio', 'tasks.openKanban', 'notes.openScratchpad'],
+          requiredActions: wantsImageDesign
+            ? ['design.importImage', 'design.saveAnnotations', 'design.exportAnnotatedPng', 'design.openImageDesign']
+            : ['design.importImage', 'design.saveAnnotations', 'design.exportAnnotatedPng'],
+          optionalActions: wantsImageDesign
+            ? ['research.openProResearch']
+            : ['design.openImageDesign', 'design.openPrototypeStudio', 'tasks.openKanban', 'notes.openScratchpad'],
           accentHex: '#4f46e5',
           iconPreset: 'workbench-grid',
           localOnly: false,
-          highlights: ['含原型画框 + 任务看板 + 随手记', '支持多项目并发跟进', '可后续自由删减模块'],
+          highlights: wantsImageDesign
+            ? ['含本地画布批注 + gpt-image-design + chatgpt-pro-research', '调研、出图、批注全链路可打包交付', '支持 API / 网页双通道']
+            : ['含 GPT-Image Design AI 出图 + 原型画框 + 任务看板', '支持多项目并发跟进', '可后续自由删减模块'],
         },
       ]
     }
@@ -312,8 +497,8 @@ export class DshModelBridge {
           optionalActions: [],
           accentHex: '#0369a1',
           iconPreset: 'bid-shield',
-          localOnly: true,
-          highlights: ['单栏极简，打开就导 DOCX', '最少插件，启动最快', '纯本地运行'],
+          localOnly: plan.localOnly,
+          highlights: ['单栏极简，打开就导 DOCX', '显示所需插件', plan.localOnly ? '本地文件处理' : '查公开标讯需要外部数据源'],
         },
         {
           id: 'standard',
@@ -325,11 +510,11 @@ export class DshModelBridge {
           layout: 'list-detail',
           sections: ['deadlines', 'missing-materials', 'bid-preview'],
           requiredActions: reqBase,
-          optionalActions: ['calendar.addDeadline'],
+          optionalActions: plan.optionalActions.filter(action => action === 'calendar.addDeadline'),
           accentHex: '#0f766e',
           iconPreset: 'bid-shield',
-          localOnly: true,
-          highlights: ['完整截止日 + 资质检查 + 原文定位', '自带纯本地截止日历', '可一键切换替代插件'],
+          localOnly: plan.localOnly,
+          highlights: ['完整截止日 + 资质检查 + 原文定位', plan.optionalActions.includes('calendar.addDeadline') ? '可导出本地日历' : '仅处理招标文件', '可一键切换替代插件'],
         },
         {
           id: 'pro',
@@ -497,6 +682,9 @@ interface RefinementHints {
   accentHex?: string
   iconPreset?: Exclude<BrandIconPreset, 'custom'>
   enableTenderSearch?: boolean
+  enableImageDesign?: boolean
+  enableProResearch?: boolean
+  enableCalendar?: boolean
 }
 
 function extractLocalRefinementHints(text: string): RefinementHints {
@@ -559,6 +747,15 @@ function extractLocalRefinementHints(text: string): RefinementHints {
   if (/开启查标讯|加上查标讯/i.test(text)) hints.enableTenderSearch = true
   else if (/关闭查标讯|不查标讯/i.test(text)) hints.enableTenderSearch = false
 
+  if (/(?:开启|加上|添加|加入).*(?:ai.?生图|生图|出图|gpt.?image|html.?demo)/i.test(text)) hints.enableImageDesign = true
+  else if (/(?:关闭|去掉|移除|删除|不要).*(?:ai.?生图|生图|出图|gpt.?image|html.?demo)/i.test(text)) hints.enableImageDesign = false
+
+  if (/(?:开启|加上|添加|加入).*(?:多轮调研|深度调研|pro.?research|竞品调研)/i.test(text)) hints.enableProResearch = true
+  else if (/(?:关闭|去掉|移除|删除|不要).*(?:多轮调研|深度调研|pro.?research|竞品调研)/i.test(text)) hints.enableProResearch = false
+
+  if (/(?:开启|加上|添加|加入).*(?:日历|截止提醒)/i.test(text)) hints.enableCalendar = true
+  else if (/(?:关闭|去掉|移除|删除|不要).*(?:日历|截止提醒)/i.test(text)) hints.enableCalendar = false
+
   return hints
 }
 
@@ -617,13 +814,65 @@ function buildSafePatchFromHints(
     patch.iconPreset = hints.iconPreset
     changes.push(`图标改为「${hints.iconPreset}」`)
   }
-  if (hints.enableTenderSearch === true && !spec.requiredActions.includes('tender.searchNotices')) {
-    patch.requiredActions = [...spec.requiredActions, 'tender.searchNotices']
+  let nextReq = [...spec.requiredActions]
+  let nextOpt = [...spec.optionalActions]
+  let reqChanged = false
+  let optChanged = false
+
+  if (hints.enableTenderSearch === true && !nextReq.includes('tender.searchNotices')) {
+    nextReq.push('tender.searchNotices')
+    reqChanged = true
     changes.push('增加「查询公开标讯」需求')
-  } else if (hints.enableTenderSearch === false && spec.requiredActions.includes('tender.searchNotices')) {
-    patch.requiredActions = spec.requiredActions.filter((a) => a !== 'tender.searchNotices')
+  } else if (hints.enableTenderSearch === false && nextReq.includes('tender.searchNotices')) {
+    nextReq = nextReq.filter((a) => a !== 'tender.searchNotices')
+    reqChanged = true
     changes.push('关闭「查询公开标讯」需求')
   }
+
+  if (hints.enableImageDesign === true && !nextReq.includes('design.openImageDesign') && !nextOpt.includes('design.openImageDesign')) {
+    nextOpt.push('design.openImageDesign')
+    optChanged = true
+    changes.push('增加「AI 生图与 HTML Demo」能力')
+  } else if (hints.enableImageDesign === false) {
+    if (nextOpt.includes('design.openImageDesign')) {
+      nextOpt = nextOpt.filter((a) => a !== 'design.openImageDesign')
+      optChanged = true
+    }
+    if (nextReq.includes('design.openImageDesign') && nextReq.length > 1) {
+      nextReq = nextReq.filter((a) => a !== 'design.openImageDesign')
+      reqChanged = true
+    }
+    if (optChanged || reqChanged) changes.push('移除「AI 生图与 HTML Demo」能力')
+  }
+
+  if (hints.enableProResearch === true && !nextReq.includes('research.openProResearch') && !nextOpt.includes('research.openProResearch')) {
+    nextOpt.push('research.openProResearch')
+    optChanged = true
+    changes.push('增加「Pro 多轮调研」能力')
+  } else if (hints.enableProResearch === false) {
+    if (nextOpt.includes('research.openProResearch')) {
+      nextOpt = nextOpt.filter((a) => a !== 'research.openProResearch')
+      optChanged = true
+    }
+    if (nextReq.includes('research.openProResearch') && nextReq.length > 1) {
+      nextReq = nextReq.filter((a) => a !== 'research.openProResearch')
+      reqChanged = true
+    }
+    if (optChanged || reqChanged) changes.push('移除「Pro 多轮调研」能力')
+  }
+
+  if (hints.enableCalendar === true && !nextReq.includes('calendar.addDeadline') && !nextOpt.includes('calendar.addDeadline')) {
+    nextOpt.push('calendar.addDeadline')
+    optChanged = true
+    changes.push('增加「截止日提醒日历」能力')
+  } else if (hints.enableCalendar === false && nextOpt.includes('calendar.addDeadline')) {
+    nextOpt = nextOpt.filter((a) => a !== 'calendar.addDeadline')
+    optChanged = true
+    changes.push('移除「截止日提醒日历」能力')
+  }
+
+  if (reqChanged && nextReq.length > 0) patch.requiredActions = nextReq
+  if (optChanged) patch.optionalActions = nextOpt
 
   return { patch: patch as NaturalRefinementResult['patch'], changes }
 }

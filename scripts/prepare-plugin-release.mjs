@@ -237,7 +237,7 @@ function validateMarketIndex(indexPath) {
   }
   return {
     ok: issues.length === 0,
-    detail: issues.length === 0 ? `Valid format:1 DSH custom index (${raw.plugins.length} plugin)` : issues.join('; '),
+    detail: issues.length === 0 ? `Valid format:1 DSH custom index (${raw.plugins.length} plugins)` : issues.join('; '),
   }
 }
 

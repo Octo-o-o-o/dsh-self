@@ -10,12 +10,8 @@ import {
   type WidgetId,
 } from '@dsh-self/product-spec'
 
-/**
- * Self-contained dominant color extractor:
- * Uses `sharp` when resolvable in the host runtime, gracefully falling back to
- * deterministic pure-JS raster sampling so `dsh-self-studio` has zero hard native deps.
- */
-async function extractDominantColorSafe(imageBuffer: Buffer): Promise<string> {
+// Studio's browser can sample decoded pixels before upload. Direct service callers use sharp.
+async function extractDominantColorSafe(imageBuffer: Buffer, clientColor?: string): Promise<string> {
   // Reject non-raster inputs (e.g. external SVG)
   const isPng = imageBuffer.length >= 8 && imageBuffer[0] === 0x89 && imageBuffer[1] === 0x50 && imageBuffer[2] === 0x4e && imageBuffer[3] === 0x47
   const isJpeg = imageBuffer.length >= 3 && imageBuffer[0] === 0xff && imageBuffer[1] === 0xd8 && imageBuffer[2] === 0xff
@@ -23,6 +19,7 @@ async function extractDominantColorSafe(imageBuffer: Buffer): Promise<string> {
   if (!isPng && !isJpeg && !isWebp) {
     throw new Error('Only PNG, JPEG, and WebP raster images are supported')
   }
+  if (clientColor && /^#[0-9a-f]{6}$/i.test(clientColor)) return clientColor
   try {
     const mod = await import('sharp')
     const sharpFn = mod.default
@@ -38,21 +35,7 @@ async function extractDominantColorSafe(imageBuffer: Buffer): Promise<string> {
     const b = (data[2] ?? 110).toString(16).padStart(2, '0')
     return `#${r}${g}${b}`
   } catch {
-    // Pure-JS deterministic palette fallback derived from image byte histogram
-    let r = 0
-    let g = 0
-    let b = 0
-    const step = Math.max(3, Math.floor(imageBuffer.length / 300))
-    let count = 0
-    for (let i = 16; i + 2 < imageBuffer.length; i += step) {
-      r += imageBuffer[i]!
-      g += imageBuffer[i + 1]!
-      b += imageBuffer[i + 2]!
-      count += 1
-    }
-    if (count === 0) return '#0f766e'
-    const hex = (v: number) => Math.max(24, Math.min(210, Math.round(v / count))).toString(16).padStart(2, '0')
-    return `#${hex(r)}${hex(g)}${hex(b)}`
+    throw new Error('无法解码参考图颜色，请重新上传 PNG、JPEG 或 WebP / Could not sample the reference image')
   }
 }
 
@@ -77,7 +60,7 @@ export interface ClarifyingQuestion {
 export function generateMinimalClarifications(prompt: string): ClarifyingQuestion[] {
   const questions: ClarifyingQuestion[] = []
   const mentionsBid = /投标|标书|招标|标讯|bid|tender/i.test(prompt)
-  const explicitlySaysSearch = /查标讯|找标讯|搜标讯|企查查|search tender/i.test(prompt)
+  const explicitlySaysSearch = /查(?:询)?(?:公开)?标讯|找(?:公开)?标讯|搜(?:索)?(?:公开)?标讯|企查查|search.*tender/i.test(prompt)
   const explicitlySaysNoSearch = /不查标讯|已有招标|手头已有|现有招标|no search/i.test(prompt)
   if (mentionsBid && !explicitlySaysSearch && !explicitlySaysNoSearch) {
     questions.push({
@@ -118,27 +101,116 @@ export function planActionsFromTrustedInputs(options: {
 } {
   const text = options.userPrompt
   const clar = options.clarifications ?? {}
-  const isDesign = /设计|画布|批注|标注|长图|海报|design|canvas|annotate/i.test(text)
-  const wantsTenderSearch =
-    clar['bid-source-mode'] === 'search-tenders' ||
-    (/查标讯|找标讯|搜标讯|企查查|search tender/i.test(text) && !/不查标讯/i.test(text))
+  const hasBid = /招投标|投标|标书|招标|标讯|响应表|\bbids?\b|\btenders?\b/i.test(text)
+  const hasResearch = /多轮调研|深度调研|竞品调研|竞品分析|技术选型|方案调研|文献调研|pro.?research|chatgpt.*调研|调研工作台|研究工作台/i.test(text)
+  const wantsAiImageDesign = /生图|出图|概念图|视觉探索|落地页|html.?demo|gpt.?image|ai.?设计|ai.?生图|image.?design/i.test(text)
+  const hasDesignCanvas = /设计师|设计室|视觉设计|平面设计|设计工作台|画布|长图|海报|图片批注|位图批注|批注.*图|图.*批注|作品图|作品|design|canvas|artwork|annotat(?:e|ion).*image/i.test(text)
+  const hasDesign = wantsAiImageDesign || hasDesignCanvas
 
-  if (isDesign) {
+  if (!hasBid && !hasDesign && !hasResearch) {
+    throw new Error('此需求还没有匹配到已交付的动作。当前支持处理招标 DOCX、图片批注与 AI 生图设计、以及 Pro 多轮调研工作台（支持自由组合）。请补充要操作的文件或期望结果。 / Describe the file and output for a supported workflow.')
+  }
+  const wantsTenderSearch = clar['bid-source-mode'] === 'search-tenders' ||
+    (/查(?:询)?(?:公开)?标讯|找(?:公开)?标讯|搜(?:索)?(?:公开)?标讯|企查查|search.*tender/i.test(text) &&
+      !/不查(?:询)?(?:公开)?标讯|无需(?:查|搜索).*标讯|no search/i.test(text))
+
+  const activeDomainCount = [hasBid, hasDesign, hasResearch].filter(Boolean).length
+
+  // Composite / custom multi-domain prompt: union ALL matched deliverable capabilities instead of dropping secondary domains
+  if (activeDomainCount >= 2) {
+    const requiredActions: ActionId[] = []
+    const optionalActions: ActionId[] = []
+    const sections: WidgetId[] = []
+    const acceptanceFixtures: string[] = []
+    const expectedOutputs: string[] = []
+
+    if (hasBid) {
+      if (wantsTenderSearch) requiredActions.push('tender.searchNotices')
+      requiredActions.push('bid.importRequirements', 'bid.exportResponseDocx')
+      if (!/不要日历|去掉日历|no calendar/i.test(text)) optionalActions.push('calendar.addDeadline')
+      sections.push('deadlines', 'missing-materials', 'bid-preview')
+      acceptanceFixtures.push('bid-sample-valid.docx', 'bid-sample-scanned.docx')
+      expectedOutputs.push('responses/*.docx')
+    }
+    if (hasDesignCanvas) {
+      requiredActions.push('design.importImage', 'design.saveAnnotations', 'design.exportAnnotatedPng')
+      sections.push('project-list', 'design-canvas', 'annotations-panel')
+      acceptanceFixtures.push('design-exif-rotated.jpg', 'design-ultralong-2000x40000.png')
+      expectedOutputs.push('exports/*.png', '.annotations.json')
+    }
+    if (wantsAiImageDesign) {
+      requiredActions.push('design.openImageDesign')
+      if (!sections.includes('project-list')) sections.push('project-list')
+      expectedOutputs.push('docs/design/*/design.md')
+    }
+    if (hasResearch) {
+      requiredActions.push('research.openProResearch')
+      sections.push('recent-sessions', 'connections-card')
+      acceptanceFixtures.push('research-topic-1round.json')
+      expectedOutputs.push('docs/research/*/report.md')
+    }
+
+    const dedupRequired = [...new Set(requiredActions)]
+    const dedupOptional = [...new Set(optionalActions)].filter((a) => !dedupRequired.includes(a))
+    const dedupSections = [...new Set(sections)].slice(0, 6)
+    const needsDesignCanvasLayout = dedupSections.includes('design-canvas')
+    const requestedLayout = options.controlSafe?.layoutPreset
+    const layout: LayoutPreset = needsDesignCanvasLayout
+      ? (requestedLayout === 'single-column' ? 'single-column' : 'three-pane')
+      : (requestedLayout === 'three-pane' ? 'dashboard-grid' : (requestedLayout ?? 'dashboard-grid'))
+    const localOnly = !wantsTenderSearch && !wantsAiImageDesign && !hasResearch
+
+    return {
+      role: '跨场景自定义工作台负责人',
+      layout,
+      sections: dedupSections,
+      primaryAction: dedupRequired[0]!,
+      requiredActions: dedupRequired,
+      optionalActions: dedupOptional,
+      localOnly,
+      suggestedName: { zh: '全能自定义工作台', en: 'Custom All-in-One Desk' },
+      acceptanceFixtures: acceptanceFixtures.length > 0 ? [...new Set(acceptanceFixtures)] : ['bid-sample-valid.docx'],
+      expectedOutputs: expectedOutputs.length > 0 ? [...new Set(expectedOutputs)] : ['outputs/*'],
+    }
+  }
+
+  if (hasResearch) {
+    const layout: LayoutPreset = options.controlSafe?.layoutPreset === 'three-pane'
+      ? 'list-detail'
+      : (options.controlSafe?.layoutPreset ?? 'list-detail')
+    return {
+      role: '行业与技术调研分析师',
+      layout,
+      sections: ['project-list', 'recent-sessions', 'connections-card'],
+      primaryAction: 'research.openProResearch',
+      requiredActions: ['research.openProResearch'],
+      optionalActions: [],
+      localOnly: false,
+      suggestedName: { zh: '深度调研工作台', en: 'Pro Research Desk' },
+      acceptanceFixtures: ['research-topic-1round.json'],
+      expectedOutputs: ['docs/research/*/report.md'],
+    }
+  }
+
+  if (hasDesign) {
     const layout: LayoutPreset = options.controlSafe?.layoutPreset ?? 'three-pane'
     const sections: WidgetId[] = layout === 'three-pane'
       ? ['project-list', 'design-canvas', 'annotations-panel']
       : ['project-list', 'annotations-panel']
+    const requiredActions: ActionId[] = wantsAiImageDesign
+      ? ['design.importImage', 'design.saveAnnotations', 'design.exportAnnotatedPng', 'design.openImageDesign']
+      : ['design.importImage', 'design.saveAnnotations', 'design.exportAnnotatedPng']
     return {
       role: '视觉与交互设计师',
       layout,
       sections,
-      primaryAction: 'design.importImage',
-      requiredActions: ['design.importImage', 'design.saveAnnotations', 'design.exportAnnotatedPng'],
-      optionalActions: ['design.openPrototypeStudio'],
-      localOnly: true,
-      suggestedName: { zh: '青禾设计室', en: 'Qinghe Design' },
+      primaryAction: wantsAiImageDesign ? 'design.openImageDesign' : 'design.importImage',
+      requiredActions,
+      optionalActions: [],
+      localOnly: !wantsAiImageDesign,
+      suggestedName: wantsAiImageDesign ? { zh: '青禾 AI 设计室', en: 'Qinghe AI Design' } : { zh: '青禾设计室', en: 'Qinghe Design' },
       acceptanceFixtures: ['design-exif-rotated.jpg', 'design-ultralong-2000x40000.png'],
-      expectedOutputs: ['exports/*.png', '.annotations.json'],
+      expectedOutputs: wantsAiImageDesign ? ['exports/*.png', '.annotations.json', 'docs/design/*/design.md'] : ['exports/*.png', '.annotations.json'],
     }
   }
 
@@ -172,16 +244,16 @@ export function planActionsFromTrustedInputs(options: {
  */
 export async function extractReferenceDesignDualChannel(options: {
   readonly imageBuffer?: Buffer
+  readonly referenceColorHex?: string
   readonly webpageMeta?: { readonly title: string; readonly themeColorHex: string | null; readonly headings: readonly string[] }
   readonly modelModality: ModelModalityInfo
   readonly hintLayout?: LayoutPreset
   readonly hintIntents?: readonly CapabilityIntent[]
 }): Promise<ExtractionResult> {
-  const canUseVision = options.imageBuffer !== undefined && supportsImageInputModality(options.modelModality)
 
   let dominantHex = options.webpageMeta?.themeColorHex ?? '#0f766e'
   if (options.imageBuffer !== undefined) {
-    dominantHex = await extractDominantColorSafe(options.imageBuffer)
+    dominantHex = await extractDominantColorSafe(options.imageBuffer, options.referenceColorHex)
   }
   const paletteHex = deriveThemeSeedsFromDominantColor(dominantHex)
   const layoutPreset: LayoutPreset = options.hintLayout ?? 'list-detail'
@@ -216,7 +288,7 @@ export async function extractReferenceDesignDualChannel(options: {
       sectionIds,
       capabilityIntents,
       paletteHex: paletteHex as { light: SemanticSeedPalette; dark: SemanticSeedPalette },
-      modalityUsed: canUseVision ? 'vision-model' : 'local-dominant-color-fallback',
+      modalityUsed: 'local-dominant-color-fallback',
     },
     taintedDisplay: {
       provenance: 'untrusted-extract',

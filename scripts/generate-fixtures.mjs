@@ -104,7 +104,7 @@ writeProductFixture('qinghe-design', {
   layout: 'three-pane',
   sections: ['project-list', 'design-canvas', 'annotations-panel'],
   requiredActions: ['design.importImage', 'design.saveAnnotations', 'design.exportAnnotatedPng'],
-  optionalActions: ['design.openPrototypeStudio'],
+  optionalActions: [],
   targets: ['win32-x64', 'linux-x64', 'darwin-arm64'],
   acceptanceFixtures: ['fixtures/images/exif-rotated-6.jpg', 'fixtures/images/ultra-long-2000x40000.png'],
   expectedOutputs: ['annotated-export.png'],
@@ -161,6 +161,8 @@ writeProductFixture('qinghe-bids-downgrade', {
   acceptanceFixtures: ['fixtures/docx/valid-bid.docx'],
   expectedOutputs: ['response.docx'],
 })
+
+if (process.argv.includes('--products-only')) process.exit(0)
 
 // 2. DOCX fixtures
 const docxDir = path.join(fixturesDir, 'docx')

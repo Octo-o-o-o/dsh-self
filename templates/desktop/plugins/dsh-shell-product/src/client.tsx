@@ -6,7 +6,8 @@
  * - Registers `plugins.detail.badge` showing locked core bundle status
  */
 import { useEffect, useState } from 'react'
-import { WIDGET_CATALOG } from '@dsh-self/product-spec/catalog-contract'
+import { BusinessWorkspace } from './business-workspace.js'
+import type { ActionId } from '@dsh-self/product-spec/catalog-contract'
 import type { ProductSpec } from '@dsh-self/product-spec'
 
 interface SlotsApi {
@@ -43,14 +44,23 @@ function HomeIcon() {
 
 function ProductHomePanel({ ctx }: { readonly ctx: ClientContext }) {
   const [spec, setSpec] = useState<ProductSpec | null>(null)
-  const [viewerSrcdoc, setViewerSrcdoc] = useState<string | null>(null)
-  const [status, setStatus] = useState<string>('')
-
+  const [actions, setActions] = useState<ActionId[]>([])
+  const [extraBundles, setExtraBundles] = useState<readonly { readonly packageName: string; readonly version: string; readonly sourceKind: string; readonly description?: string }[]>([])
+  const [error, setError] = useState('')
   useEffect(() => {
-    void fetch('/api/product-spec', { credentials: 'same-origin' })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => { if (data) setSpec(data as ProductSpec) })
-      .catch(() => {})
+    let active = true
+    void Promise.all(['/api/product-spec', '/api/dsh-self/capabilities'].map(async url => {
+      const response = await fetch(url, { credentials: 'same-origin' })
+      if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`)
+      return response.json()
+    })).then(([product, capabilities]) => {
+      if (active) {
+        setActions(capabilities.actions)
+        setExtraBundles(Array.isArray(capabilities.extraBundles) ? capabilities.extraBundles : [])
+        setSpec(product)
+      }
+    }).catch(cause => { if (active) setError(String(cause)) })
+    return () => { active = false }
   }, [])
 
   const openModelSettings = () => {
@@ -62,40 +72,9 @@ function ProductHomePanel({ ctx }: { readonly ctx: ClientContext }) {
     }
   }
 
-  const openLazyDocxViewer = async () => {
-    setStatus('正在按需加载 OOXML 安全沙箱预览模块…')
-    try {
-      const reqAsync = (globalThis as unknown as { require?: { async?: (id: string) => Promise<any> } }).require?.async
-      if (reqAsync) {
-        const mod = await reqAsync('./client.docx-viewer.js')
-        const { srcdoc } = mod.buildDocxViewerSrcdoc({
-          htmlFragment: '<p data-dsh-anchor="dsh-blk-1">招标文件已通过安全过滤，点击任意段落可同步定位。</p>',
-        })
-        setViewerSrcdoc(srcdoc)
-        setStatus('沙箱预览已就绪（Opaque Origin iframe）')
-      } else {
-        setStatus('开发模式：client.docx-viewer.js 将于打包后按需加载')
-      }
-    } catch (error) {
-      setStatus(`加载预览模块失败：${error instanceof Error ? error.message : String(error)}`)
-    }
-  }
-
-  if (!spec) {
-    return <div style={{ padding: 24 }}>正在加载工作台配置…</div>
-  }
-
-  const gridStyle: Record<string, string> =
-    spec.home.layout === 'single-column'
-      ? { display: 'grid', gridTemplateColumns: '1fr', maxWidth: '820px', gap: '14px' }
-      : spec.home.layout === 'three-pane'
-        ? { display: 'grid', gridTemplateColumns: '220px 1fr 260px', gap: '14px' }
-        : spec.home.layout === 'dashboard-grid'
-          ? { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '14px' }
-          : { display: 'grid', gridTemplateColumns: '300px 1fr', gap: '14px' }
-
+  if (!spec) return <div role="status" style={{ padding: 24 }}>{error || '正在加载工作台 / Loading workspace…'}</div>
   return (
-    <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 14, height: '100%', overflow: 'auto' }}>
+    <div data-dsh-product-ready={spec.identity.productId} style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 14, height: '100%', overflow: 'auto' }}>
       <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {spec.brand.iconDataUrl && (
@@ -106,7 +85,6 @@ function ProductHomePanel({ ctx }: { readonly ctx: ClientContext }) {
             <div style={{ fontSize: 12, opacity: 0.7 }}>{spec.brand.displayName.en} · v{spec.appVersion}</div>
           </div>
         </div>
-        <span style={{ fontSize: 12, opacity: 0.75 }}>工作区：~/Workspaces/{spec.identity.internalSlug}</span>
       </header>
 
       {spec.shell.showReadinessBar && (
@@ -119,47 +97,78 @@ function ProductHomePanel({ ctx }: { readonly ctx: ClientContext }) {
           alignItems: 'center',
           gap: 10,
         }}>
-          <span>本地导入、预览、批注与导出立即可用；如需 AI 辅助功能，请配置模型凭据。</span>
+          <span>本地文件无需模型凭据 / Local files work offline</span>
           <button type="button" onClick={openModelSettings} style={{ padding: '6px 12px', borderRadius: 8, cursor: 'pointer' }}>
             前往配置模型
           </button>
         </div>
       )}
 
-      <div style={gridStyle}>
-        {spec.home.sections.map((secId) => {
-          const meta = WIDGET_CATALOG[secId]
-          const title = spec.home.sectionLabels?.[secId] ?? meta.title.zh
-          return (
-            <section key={secId} style={{
-              padding: 14,
-              borderRadius: 12,
-              border: '1px solid var(--dsw-alias-border-l2, #cbd5e1)',
-              background: 'var(--dsw-alias-card-fill, #ffffff)',
-            }}>
-              <h3 style={{ margin: '0 0 8px', fontSize: 15 }}>{title}</h3>
-              {secId === 'bid-preview' ? (
-                <div>
-                  <button type="button" onClick={() => void openLazyDocxViewer()} style={{ padding: '6px 12px', borderRadius: 8, cursor: 'pointer' }}>
-                    打开 OOXML 沙箱预览
-                  </button>
-                  {status && <p style={{ fontSize: 12, opacity: 0.75 }}>{status}</p>}
-                  {viewerSrcdoc && (
-                    <iframe
-                      sandbox="allow-scripts"
-                      srcDoc={viewerSrcdoc}
-                      title="Sandboxed DOCX Preview"
-                      style={{ width: '100%', height: 240, border: '1px solid #cbd5e1', borderRadius: 8, marginTop: 8 }}
-                    />
-                  )}
-                </div>
-              ) : (
-                <p style={{ margin: 0, fontSize: 13, opacity: 0.78 }}>{meta.title.en} · 已就绪</p>
-              )}
+      {actions.includes('bid.importRequirements') && <BusinessWorkspace kind="bid" actions={actions} home={spec.home} />}
+      {actions.includes('design.importImage') && <BusinessWorkspace kind="design" actions={actions} home={spec.home} />}
+      {(actions.includes('research.openProResearch') || actions.includes('design.openImageDesign')) && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 12 }}>
+          {actions.includes('research.openProResearch') && (
+            <section style={{ padding: 14, borderRadius: 12, border: '1px solid var(--dsw-alias-border-l2, #cbd5e1)', background: 'var(--dsw-alias-card-fill, #ffffff)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <h3 style={{ margin: 0, fontSize: 15 }}>ChatGPT Pro Research（多轮调研）</h3>
+              <p style={{ margin: 0, fontSize: 12, opacity: 0.8 }}>
+                已打包内置 chatgpt-pro-research@0.3.6 与 pro-research 技能；浏览器登录态独立保存在本客户端数据目录内（需本机 Chrome + ChatGPT 网页账号）。
+              </p>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => ctx.layout?.selectPanel?.('chatgpt-pro-research')}
+                  style={{ padding: '6px 12px', borderRadius: 8, cursor: 'pointer' }}
+                >
+                  打开 Pro Research 面板
+                </button>
+              </div>
             </section>
-          )
-        })}
-      </div>
+          )}
+          {actions.includes('design.openImageDesign') && (
+            <section style={{ padding: 14, borderRadius: 12, border: '1px solid var(--dsw-alias-border-l2, #cbd5e1)', background: 'var(--dsw-alias-card-fill, #ffffff)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <h3 style={{ margin: 0, fontSize: 15 }}>GPT-Image Design（AI 生图与 HTML Demo）</h3>
+              <p style={{ margin: 0, fontSize: 12, opacity: 0.8 }}>
+                已打包内置 gpt-image-design@0.3.6 与 pro-design 技能；支持 OpenAI 兼容生图 API（请在插件设置填写 imageApiKey）或 ChatGPT 网页通道。
+              </p>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => ctx.layout?.selectPanel?.('gpt-image-design')}
+                  style={{ padding: '6px 12px', borderRadius: 8, cursor: 'pointer' }}
+                >
+                  打开 Image Design 面板
+                </button>
+              </div>
+            </section>
+          )}
+        </div>
+      )}
+      {(() => {
+        const customExtras = extraBundles.filter(
+          (b) => b.packageName !== 'chatgpt-pro-research' && b.packageName !== 'gpt-image-design',
+        )
+        if (customExtras.length === 0) return null
+        return (
+          <section style={{ padding: 14, borderRadius: 12, border: '1px solid var(--dsw-alias-border-l2, #cbd5e1)', background: 'var(--dsw-alias-card-fill, #ffffff)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <h3 style={{ margin: 0, fontSize: 15 }}>已附加的扩展 DSH 插件（{customExtras.length}）</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 10 }}>
+              {customExtras.map((b) => (
+                <div key={b.packageName} style={{ padding: 10, borderRadius: 8, border: '1px solid var(--dsw-alias-border-l1, #e2e8f0)', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                    <strong style={{ fontSize: 13 }}>{b.packageName}</strong>
+                    <span style={{ fontSize: 11, opacity: 0.7 }}>v{b.version}</span>
+                  </div>
+                  {b.description && <p style={{ margin: 0, fontSize: 12, opacity: 0.8 }}>{b.description}</p>}
+                  <span style={{ fontSize: 11, opacity: 0.65 }}>
+                    已随独立配置槽加载（如有界面入口请从左侧导航栏打开）
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      })()}
     </div>
   )
 }

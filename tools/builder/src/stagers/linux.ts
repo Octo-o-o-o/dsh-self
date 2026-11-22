@@ -7,6 +7,7 @@ import {
   type ProductSpec,
 } from '@dsh-self/product-spec'
 import { generateProductIcons } from '../icon-gen.js'
+import { ensureExternalPluginPayloads } from '../external-plugins.js'
 import { buildProfileSeed } from '../seed-builder.js'
 import { sha256File, type ValidatedBuildSnapshot } from '../validate-and-snapshot.js'
 
@@ -50,6 +51,7 @@ export async function stageLinuxDebPackage(options: {
   readonly outDir: string
   readonly jobId: string
   readonly baseShellDir?: string
+  readonly pluginCacheDir?: string
 }): Promise<{ readonly plan: LinuxStagedPlan; readonly receipt: BuildReceipt }> {
   const { spec, lock, identity } = options.snapshot
   const slug = spec.identity.internalSlug
@@ -72,7 +74,8 @@ export async function stageLinuxDebPackage(options: {
   writeFileSync(path.join(productDir, 'identity.json'), `${JSON.stringify(identity, undefined, 2)}\n`)
   writeFileSync(path.join(productDir, 'plugins.linux-x64.lock.json'), `${JSON.stringify(lock, undefined, 2)}\n`)
 
-  const seed = buildProfileSeed({ spec, lock, outDir: productDir })
+  await ensureExternalPluginPayloads(lock, { pluginCacheDir: options.pluginCacheDir })
+  const seed = buildProfileSeed({ spec, lock, outDir: productDir, pluginCacheDir: options.pluginCacheDir })
 
   if (options.baseShellDir && existsSync(options.baseShellDir)) {
     cpSync(options.baseShellDir, optDir, { recursive: true })

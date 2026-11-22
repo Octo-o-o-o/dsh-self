@@ -80,8 +80,8 @@ async function main() {
   const infoFile = path.join(root, '.dev', 'official-dsh-demo', 'demo-url.txt')
   console.log(`[official-dsh-demo] Launching official dsh@0.2.2-rc.5 web on http://127.0.0.1:${port} ...`)
 
-  const builderCliPath = path.join(root, 'tools', 'builder', 'dist', 'cli.js')
-  const baseShellWin32 = path.join(root, '.dev', 'base-shell', 'win32-x64')
+  const builderCliPath = process.env.DSH_SELF_BUILDER_CLI || path.join(root, 'tools', 'builder', 'dist', 'cli.js')
+  const baseShellWin32 = process.env.DSH_SELF_BASE_SHELL_DIR || path.join(root, '.dev', 'base-shell', 'win32-x64')
   const demoEnv = {
     ...process.env,
     DSH_HOME: demoHome,

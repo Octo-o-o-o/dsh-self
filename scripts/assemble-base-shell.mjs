@@ -7,7 +7,10 @@ import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const baseShellOut = path.join(root, '.dev', 'base-shell', 'win32-x64')
+const outputName = process.argv[2] || 'base-shell'
+if (!/^[a-z0-9][a-z0-9-]*$/.test(outputName)) throw new Error('Expected a local .dev output name')
+const stagingRoot = path.join(root, '.dev', outputName)
+const baseShellOut = path.join(stagingRoot, 'win32-x64')
 const electronDistCandidates = [
   process.env.DSH_SELF_ELECTRON_DIST,
   path.join(root, 'templates', 'desktop', 'node_modules', 'electron', 'dist'),
@@ -20,7 +23,7 @@ const runtimeNodeModules =
 const node26Exe = process.env.DSH_SELF_NODE26_EXE ?? process.execPath
 
 // Prepare clean standalone plugin copies (without devDependencies/node_modules symlinks)
-const stagedPlugins = path.join(root, '.dev', 'base-shell', '.plugins-staged')
+const stagedPlugins = path.join(stagingRoot, '.plugins-staged')
 rmSync(stagedPlugins, { recursive: true, force: true })
 mkdirSync(path.join(stagedPlugins, 'dsh-theme-product'), { recursive: true })
 mkdirSync(path.join(stagedPlugins, 'dsh-shell-product'), { recursive: true })

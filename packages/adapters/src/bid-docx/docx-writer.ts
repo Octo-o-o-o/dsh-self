@@ -1,5 +1,5 @@
 import { unzipSync, zipSync, strFromU8, strToU8 } from 'fflate'
-import type { BidProjectAnalysis } from './bid-analyzer.js'
+import { PENDING_BID_RESPONSE, type BidProjectAnalysis } from './bid-analyzer.js'
 
 function escapeXml(value: string): string {
   return value
@@ -58,7 +58,8 @@ export function buildBidResponseDocx(analysis: BidProjectAnalysis): Uint8Array {
         item.id,
         item.title,
         `${item.anchor.blockPath} (${item.anchor.excerptHash})`,
-        item.responseDraft,
+        item.responseDraft === `【逐条响应草稿】针对「${item.title.slice(0, 60)}」，我方完全满足要求并附证明材料。`
+          ? PENDING_BID_RESPONSE : item.responseDraft,
       ]),
     )
   }

@@ -63,7 +63,15 @@ const { product, identity } = config
 const slug = product.identity.internalSlug
 
 // Step 1: Isolate system identity & userData/sessionData/crashDumps SYNCHRONOUSLY before single-instance lock!
-const userDataDir = path.join(app.getPath('appData'), slug)
+const trialRoot = process.env.DSH_SELF_TRIAL_ROOT && path.resolve(process.env.DSH_SELF_TRIAL_ROOT)
+const userDataDir = trialRoot ? path.join(trialRoot, 'data') : path.join(app.getPath('appData'), slug)
+if (trialRoot && process.send) {
+  process.on('message', message => {
+    if ((message as { type?: string })?.type === 'close-trial') app.quit()
+    if ((message as { type?: string })?.type === 'focus-trial') mainWindow?.focus()
+  })
+  process.on('disconnect', () => app.quit())
+}
 const sessionDataDir = path.join(userDataDir, 'session')
 const crashDumpsDir = path.join(userDataDir, 'crashes')
 const dshHome = path.join(userDataDir, 'h')
@@ -129,7 +137,7 @@ async function verifyCompositeHealth(origin: string, readyUrl: string): Promise<
       signal: AbortSignal.timeout(8_000),
     })
     return {
-      ok: specRes.status === 200 || specRes.status === 401,
+      ok: specRes.status === 200,
       productSpecStatus: specRes.status,
     }
   } catch {
@@ -337,6 +345,7 @@ async function bootClient(): Promise<void> {
       productDir,
       profileSlot,
       overlayPlugins,
+      previewMode: Boolean(trialRoot),
       disableToolWeb: product.shell.localOnlyToolWebDisabled,
       onExit: (code) => {
         if (!shuttingDown && code !== 0 && mainWindow && !mainWindow.isDestroyed()) {
@@ -360,6 +369,18 @@ async function bootClient(): Promise<void> {
     }
 
     await mainWindow.loadURL(activeHost.readyUrl)
+
+    if (trialRoot && process.send) {
+      const ready = await mainWindow.webContents.executeJavaScript(`new Promise(resolve => {
+        const ready = () => document.querySelector('[data-dsh-product-ready]')?.getAttribute('data-dsh-product-ready') === ${JSON.stringify(product.identity.productId)};
+        if (ready()) return resolve(true);
+        const observer = new MutationObserver(() => { if (ready()) { observer.disconnect(); clearTimeout(timer); resolve(true); } });
+        const timer = setTimeout(() => { observer.disconnect(); resolve(false); }, 30000);
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+      })`)
+      if (!ready) throw new Error('桌面业务首页未就绪 / Product home did not mount')
+      process.send({ type: 'trial-ready' })
+    }
 
     // Mark active profile slot healthy & record high-water state-version.json
     if (seed !== null) {
@@ -398,6 +419,7 @@ async function bootClient(): Promise<void> {
     }
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error)
+    if (trialRoot && process.send) process.send({ type: 'trial-error', detail })
     if (seed !== null) {
       const outcome = handleSlotBootFailure(
         userDataDir,
@@ -414,6 +436,7 @@ async function bootClient(): Promise<void> {
             productDir,
             profileSlot: outcome.state.active,
             overlayPlugins,
+            previewMode: Boolean(trialRoot),
             disableToolWeb: product.shell.localOnlyToolWebDisabled,
           })
           hostOrigin = activeHost.origin

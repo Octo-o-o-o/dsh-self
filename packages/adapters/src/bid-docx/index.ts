@@ -14,6 +14,7 @@ export const BID_PROJECTS_DIRNAME = '.dsh-bid-projects'
 
 export interface ImportedBidProject {
   readonly analysis: BidProjectAnalysis
+  readonly parsed: ParsedOoxmlDocument
   readonly projectDir: string
   readonly sanitizedPreviewPath: string
   readonly metadataPath: string
@@ -37,7 +38,7 @@ export function importBidDocxIntoWorkspace(options: {
   writeFileSync(sanitizedPreviewPath, parsed.sanitizedPreviewDocx)
   writeFileSync(metadataPath, `${JSON.stringify({ analysis, blocks: parsed.blocks }, undefined, 2)}\n`)
 
-  return { analysis, projectDir, sanitizedPreviewPath, metadataPath }
+  return { analysis, parsed, projectDir, sanitizedPreviewPath, metadataPath }
 }
 
 export function exportBidResponseToWorkspace(options: {

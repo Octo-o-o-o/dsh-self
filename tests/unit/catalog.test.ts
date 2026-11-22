@@ -89,4 +89,45 @@ describe('catalog 4-step admission, 6-dimension conflicts & combination solver',
     expect(lock.target).toBe('win32-x64')
     expect(lock.plugins.length).toBeGreaterThanOrEqual(2)
   })
+
+  it('admits chatgpt-pro-research@0.3.6 & gpt-image-design@0.3.6 together cleanly and respects localOnly boundaries', () => {
+    const research = DEFAULT_CATALOG.find((e) => e.packageName === 'chatgpt-pro-research')!
+    const imageDesign = DEFAULT_CATALOG.find((e) => e.packageName === 'gpt-image-design')!
+    expect(research).toBeDefined()
+    expect(imageDesign).toBeDefined()
+
+    for (const entry of [research, imageDesign]) {
+      const report = evaluateCatalogAdmission(entry, 'win32-x64')
+      expect(report.admitted, report.failures.join('; ')).toBe(true)
+      expect(report.dshState).toBe('declared-compatible')
+      expect(report.usesJsYamlTag).toBe(false)
+    }
+
+    // Zero 6-dimension conflicts when combined together
+    expect(findCombinationConflicts([research, imageDesign])).toEqual([])
+
+    // localOnly: true must not auto-select external-connection optional plugins
+    const localDesign = resolvePluginCombination({
+      target: 'win32-x64',
+      requiredActions: ['design.importImage', 'design.saveAnnotations', 'design.exportAnnotatedPng'],
+      optionalActions: ['design.openImageDesign'],
+      localOnly: true,
+    })
+    expect(localDesign.selected.some((e) => e.packageName === 'gpt-image-design')).toBe(false)
+
+    // Non-local research + AI image design resolves both with pinned SHA-512 integrity
+    const fullResearch = resolvePluginCombination({
+      target: 'win32-x64',
+      requiredActions: ['research.openProResearch'],
+      optionalActions: ['design.openImageDesign'],
+      localOnly: false,
+    })
+    expect(fullResearch.missingRequiredActions).toEqual([])
+    expect(fullResearch.selected.map((e) => e.packageName)).toEqual([
+      'gpt-image-design',
+      'chatgpt-pro-research',
+    ])
+    const lock = buildPlatformLock(fullResearch)
+    expect(lock.plugins.every((p) => p.sourceKind === 'npm' && p.integritySha512.startsWith('sha512-'))).toBe(true)
+  })
 })

@@ -4,7 +4,8 @@
  * carrier-neutral across `dsh web` and official `dsh` Desktop, ZERO `webServer` private
  * assumptions and ZERO OctoDeEpSeeK private APIs.
  */
-import { existsSync, readFileSync } from 'node:fs'
+import { createReadStream, existsSync, statSync } from 'node:fs'
+import { Readable } from 'node:stream'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { Context } from '@deepseek-ai/cordis'
@@ -35,6 +36,22 @@ interface OfficialHostConnection {
       readonly fetch: (request: Request) => Promise<Response>
     }): () => Promise<void>
   }
+}
+
+function downloadFile(file: string): Response {
+  const name = path.basename(file)
+  const types: Record<string, string> = {
+    '.exe': 'application/octet-stream', '.dmg': 'application/octet-stream', '.deb': 'application/octet-stream',
+    '.json': 'application/json; charset=utf-8', '.yml': 'text/yaml; charset=utf-8',
+  }
+  return new Response(Readable.toWeb(createReadStream(file)) as ReadableStream<Uint8Array>, {
+    headers: {
+      'Content-Type': types[path.extname(name)] ?? 'text/plain; charset=utf-8',
+      'Content-Length': String(statSync(file).size),
+      'Content-Disposition': `attachment; filename="${name}"`,
+      'Cache-Control': 'no-store',
+    },
+  })
 }
 
 export interface StudioPluginConfig {
@@ -92,7 +109,10 @@ export function apply(ctx: Context, config?: StudioPluginConfig): void {
             case 'generateBlueprints':
               return {
                 ok: true,
-                value: service.generateBlueprintOptions({
+                value: await service.suggestBlueprints({
+                  referenceImageBase64: p.referenceImageBase64,
+                  referenceImageIntent: p.referenceImageIntent, referenceColorHex: p.referenceColorHex,
+                  webpageMeta: p.webpageMeta,
                   prompt: String(p.prompt ?? ''),
                   clarificationAnswers: p.clarificationAnswers,
                 }),
@@ -109,6 +129,7 @@ export function apply(ctx: Context, config?: StudioPluginConfig): void {
                 ok: true,
                 value: {
                   project: service.getProject(String(p.projectId)),
+                  jobs: service.getProjectJobs(String(p.projectId)),
                   preview: service.getPreviewState(String(p.projectId)),
                   environment: service.getEnvironmentInfo(),
                 },
@@ -130,6 +151,8 @@ export function apply(ctx: Context, config?: StudioPluginConfig): void {
               return { ok: true, value: { project: service.importProductSpec(p.spec, p.target), environment: service.getEnvironmentInfo() } }
             case 'fetchReferenceUrl':
               return { ok: true, value: await service.fetchReferenceUrlViaSubprocess(String(p.url)) }
+            case 'openDesktopTrial':
+              return { ok: true, value: await service.openDesktopTrial(String(p.projectId), Number(p.expectedRevision)) }
             case 'startPreview':
               return { ok: true, value: { preview: await service.startOrRefreshPreview(String(p.projectId), p.target) } }
             case 'stopPreview':
@@ -140,6 +163,8 @@ export function apply(ctx: Context, config?: StudioPluginConfig): void {
             case 'buildMultiTarget': {
               const res = service.startMultiTargetBuild({
                 projectId: String(p.projectId),
+                expectedRevision: p.expectedRevision,
+                trial: p.trial,
                 targets: Array.isArray(p.targets) ? p.targets : [],
                 crossPlatformStrategy: p.crossPlatformStrategy,
                 customRemoteCommand: typeof p.customRemoteCommand === 'string' ? p.customRemoteCommand : undefined,
@@ -214,24 +239,11 @@ export function apply(ctx: Context, config?: StudioPluginConfig): void {
       if (!jobId) return Response.json({ error: 'jobId required' }, { status: 400 })
       try {
         const job = service.getJob(jobId)
-        if (!job.artifactPath || !existsSync(job.artifactPath)) {
-          return Response.json({ error: 'Artifact not found' }, { status: 404 })
+        const file = url.searchParams.get('kind') === 'receipt' ? job.receiptPath : job.artifactPath
+        if (job.status !== 'succeeded' || !file || !existsSync(file)) {
+          return Response.json({ error: 'Artifact not available' }, { status: 404 })
         }
-        const fileName = path.basename(job.artifactPath)
-        const bytes = readFileSync(job.artifactPath)
-        const contentType = fileName.endsWith('.json')
-          ? 'application/json; charset=utf-8'
-          : fileName.endsWith('.yml')
-            ? 'text/yaml; charset=utf-8'
-            : 'text/plain; charset=utf-8'
-        return new Response(bytes, {
-          status: 200,
-          headers: {
-            'Content-Type': contentType,
-            'Content-Disposition': `attachment; filename="${fileName}"`,
-            'Cache-Control': 'no-store',
-          },
-        })
+        return downloadFile(file)
       } catch (error) {
         return Response.json({ error: error instanceof Error ? error.message : String(error) }, { status: 404 })
       }
@@ -250,6 +262,8 @@ export function apply(ctx: Context, config?: StudioPluginConfig): void {
       if (!projectId || !releaseId) return Response.json({ error: 'projectId and releaseId required' }, { status: 400 })
       try {
         const rel = service.getReleaseRecord(projectId, releaseId)
+        if (kind === 'receipt' && rel.receiptPath && existsSync(rel.receiptPath)) return downloadFile(rel.receiptPath)
+        if (kind === 'receipt') return Response.json({ error: 'Receipt unavailable' }, { status: 404 })
         if (kind === 'spec') {
           return new Response(`${JSON.stringify(rel.specSnapshot, undefined, 2)}\n`, {
             status: 200,
@@ -263,23 +277,7 @@ export function apply(ctx: Context, config?: StudioPluginConfig): void {
         if (!rel.artifactPath || !existsSync(rel.artifactPath)) {
           return Response.json({ error: 'Release artifact missing on disk' }, { status: 404 })
         }
-        const bytes = readFileSync(rel.artifactPath)
-        const fileName = rel.artifactFileName || path.basename(rel.artifactPath)
-        const contentType = fileName.endsWith('.json')
-          ? 'application/json; charset=utf-8'
-          : fileName.endsWith('.yml')
-            ? 'text/yaml; charset=utf-8'
-            : fileName.endsWith('.exe') || fileName.endsWith('.deb') || fileName.endsWith('.dmg')
-              ? 'application/octet-stream'
-              : 'text/plain; charset=utf-8'
-        return new Response(bytes, {
-          status: 200,
-          headers: {
-            'Content-Type': contentType,
-            'Content-Disposition': `attachment; filename="${fileName}"`,
-            'Cache-Control': 'no-store',
-          },
-        })
+        return downloadFile(rel.artifactPath)
       } catch (error) {
         return Response.json({ error: error instanceof Error ? error.message : String(error) }, { status: 404 })
       }

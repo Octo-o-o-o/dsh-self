@@ -99,6 +99,7 @@ export async function launchDesktopHost(options: LaunchDesktopHostOptions): Prom
     shimDir,
     extraAllowed: {
       DSH_SELF_PRODUCT_DIR: path.resolve(options.productDir),
+      ...(options.previewMode ? { DSH_SELF_WORKSPACES_ROOT: path.join(options.userDataDir, 'workspaces') } : {}),
       DSH_SELF_USER_DATA_DIR: path.resolve(options.userDataDir),
     },
   })

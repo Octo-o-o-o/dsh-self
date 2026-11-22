@@ -6,6 +6,7 @@ import {
   exportAnnotatedPng,
   generatePreviewProxy,
   inspectRasterImage,
+  type InspectedRasterImage,
   type AnnotationPoint,
   type AnnotationsFile,
   type ExportAnnotatedPngResult,
@@ -23,24 +24,26 @@ export interface ImportedDesignProject {
   readonly proxyPath: string
   readonly annotationsPath: string
   readonly annotationsFile: AnnotationsFile
+  readonly info: InspectedRasterImage
   readonly proxyDims: { readonly width: number; readonly height: number; readonly scale: number }
 }
 
 /** Import artwork read-only into workspace, generate bounded preview proxy, init `.annotations.json`. */
 export async function importDesignArtwork(options: {
   readonly workspaceDir: string
-  readonly sourceImagePath: string
   readonly projectId?: string
-}): Promise<ImportedDesignProject> {
-  const info = await inspectRasterImage(options.sourceImagePath)
+} & ({ readonly sourceImagePath: string } | { readonly imageBytes: Buffer; readonly fileName: string })): Promise<ImportedDesignProject> {
+  const source = 'sourceImagePath' in options ? options.sourceImagePath : options.imageBytes
+  const info = await inspectRasterImage(source)
   const projectId = options.projectId ?? randomUUID()
   const projectDir = path.join(options.workspaceDir, DESIGN_PROJECTS_DIRNAME, projectId)
   mkdirSync(projectDir, { recursive: true })
 
   const ext = info.format === 'jpeg' ? '.jpg' : `.${info.format}`
-  const originalFileName = path.basename(options.sourceImagePath).replace(/[\\/:*?"<>|]/g, '_')
+  const originalFileName = path.basename('sourceImagePath' in options ? options.sourceImagePath : options.fileName).replace(/[\\/:*?"<>|]/g, '_')
   const originalPath = path.join(projectDir, `original${ext}`)
-  copyFileSync(options.sourceImagePath, originalPath)
+  if (typeof source === 'string') copyFileSync(source, originalPath)
+  else writeFileSync(originalPath, source)
 
   const proxy = await generatePreviewProxy(originalPath)
   const proxyPath = path.join(projectDir, 'preview-proxy.png')
@@ -65,6 +68,7 @@ export async function importDesignArtwork(options: {
     proxyPath,
     annotationsPath,
     annotationsFile,
+    info,
     proxyDims: { width: proxy.width, height: proxy.height, scale: proxy.scale },
   }
 }

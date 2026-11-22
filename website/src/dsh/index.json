@@ -1,12 +1,12 @@
 {
   "format": 1,
   "title": {
-    "en": "dsh-self Plugin Index",
-    "zh": "dsh-self 插件源"
+    "en": "dsh-self & OctoLab Plugin Index",
+    "zh": "dsh-self 与 OctoLab 插件源"
   },
   "description": {
-    "en": "Official custom plugin index for dsh-self Studio — generate isolated standalone desktop clients inside DeepSeek Harness.",
-    "zh": "dsh-self Studio 官方自定义插件索引 —— 在 DeepSeek Harness 中生成带独立图标与数据目录的专属桌面客户端。"
+    "en": "Official custom DSH plugin index by OctoLab — dsh-self Studio standalone desktop client builder, plus verified ChatGPT Pro Research and GPT-Image Design plugins.",
+    "zh": "OctoLab 官方 DSH 自定义插件索引 —— 包含 dsh-self Studio 独立桌面客户端生成器，以及经 dsh@0.2.2-rc.5 实测验证的 ChatGPT Pro Research 与 GPT-Image Design 插件。"
   },
   "metadata": {
     "categories": {
@@ -14,6 +14,18 @@
         "title": {
           "en": "Desktop Client Builder",
           "zh": "桌面客户端生成"
+        }
+      },
+      "research": {
+        "title": {
+          "en": "Research & Reports",
+          "zh": "多轮调研与报告"
+        }
+      },
+      "design": {
+        "title": {
+          "en": "Visual & UI Design",
+          "zh": "生图与前端设计"
         }
       }
     },
@@ -28,6 +40,18 @@
         "title": {
           "en": "dsh 0.2.2-rc.5",
           "zh": "dsh 0.2.2-rc.5 兼容"
+        }
+      },
+      "browser-automation": {
+        "title": {
+          "en": "Chrome Web Session",
+          "zh": "本机 Chrome 网页会话"
+        }
+      },
+      "image-api": {
+        "title": {
+          "en": "OpenAI-Compatible Image API",
+          "zh": "OpenAI 兼容生图 API"
         }
       }
     }
@@ -66,6 +90,79 @@
           },
           "engines": {
             "dsh": ">=0.2.2-rc.1 <0.3.0"
+          }
+        }
+      ]
+    },
+    {
+      "name": "gpt-image-design",
+      "title": {
+        "en": "GPT-Image Design",
+        "zh": "GPT-Image Design（AI 生图与 HTML Demo）"
+      },
+      "description": {
+        "en": "Generate images and standalone HTML demos through a ChatGPT web session, or images via any OpenAI-compatible Image API, with local gallery preview and pro-design skill.",
+        "zh": "支持 OpenAI 兼容生图 API（仅出图，长期稳定）或 ChatGPT 网页会话（出图 + 单文件 HTML Demo），自带侧边栏画廊、iframe 预览与 pro-design 技能。"
+      },
+      "icon": "icons/gpt-image-design.svg",
+      "author": "Octo-o-o-o",
+      "homepage": "https://github.com/Octo-o-o-o/gpt-image-design#readme",
+      "repository": {
+        "url": "https://github.com/Octo-o-o-o/gpt-image-design"
+      },
+      "metadata": {
+        "category": "design",
+        "labels": [
+          "image-api",
+          "browser-automation",
+          "official-dsh-compat"
+        ]
+      },
+      "versions": [
+        {
+          "version": "0.3.6",
+          "publishTimestamp": 1793342565,
+          "source": {
+            "type": "npm"
+          },
+          "engines": {
+            "dsh": ">=0.2.1-rc.3 <0.3.0"
+          }
+        }
+      ]
+    },
+    {
+      "name": "chatgpt-pro-research",
+      "title": {
+        "en": "ChatGPT Pro Research",
+        "zh": "ChatGPT Pro Research（多轮调研）"
+      },
+      "description": {
+        "en": "Resumable multi-round research through a real local Chrome ChatGPT web session with criterion-based judging, local report delivery, and bundled pro-research skill.",
+        "zh": "通过本机独立 Chrome 的 ChatGPT 网页会话做可恢复多轮调研、按成功判据自动裁决并沉淀本地交付稿，自带侧边栏面板与 pro-research 技能。"
+      },
+      "icon": "icons/chatgpt-pro-research.svg",
+      "author": "Octo-o-o-o",
+      "homepage": "https://github.com/Octo-o-o-o/chatgpt-pro-research#readme",
+      "repository": {
+        "url": "https://github.com/Octo-o-o-o/chatgpt-pro-research"
+      },
+      "metadata": {
+        "category": "research",
+        "labels": [
+          "browser-automation",
+          "official-dsh-compat"
+        ]
+      },
+      "versions": [
+        {
+          "version": "0.3.6",
+          "publishTimestamp": 1793342580,
+          "source": {
+            "type": "npm"
+          },
+          "engines": {
+            "dsh": ">=0.2.1-rc.3 <0.3.0"
           }
         }
       ]

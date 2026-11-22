@@ -1,5 +1,7 @@
 import type { OoxmlBlockAnchor, ParsedOoxmlDocument } from './ooxml-safe.js'
 
+export const PENDING_BID_RESPONSE = '待填写逐条响应及证明材料。'
+
 export interface BidDeadlineItem {
   readonly id: string
   readonly dateText: string
@@ -68,7 +70,7 @@ export function analyzeBidDocument(
         id: `score-${scoringItems.length + 1}`,
         title: text,
         pointsText: scoreMatch[1] ?? scoreMatch[2] ?? '',
-        responseDraft: `【逐条响应草稿】针对「${text.slice(0, 60)}」，我方完全满足要求并附证明材料。`,
+        responseDraft: PENDING_BID_RESPONSE,
         anchor: block,
       })
     }

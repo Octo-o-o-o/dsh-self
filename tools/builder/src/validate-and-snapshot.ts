@@ -6,6 +6,9 @@ import {
   PlatformLockSchema,
   ProductSpecSchema,
   computeSpecDigest,
+  desktopCapabilities,
+  PINNED_DSH_RUNTIME_VERSION,
+  PINNED_NODE_VERSION,
   projectRuntimeIdentity,
   type PlatformLock,
   type ProductSpec,
@@ -55,6 +58,17 @@ export function validateAndSnapshotInputs(options: {
 
   if (lock.target !== options.target) {
     throw new Error(`Lockfile target "${lock.target}" does not match requested target "${options.target}"`)
+  }
+
+  if (lock.dshRuntimeVersion !== PINNED_DSH_RUNTIME_VERSION || lock.nodeVersion !== PINNED_NODE_VERSION ||
+      lock.templateCommit !== PINNED_TEMPLATE_COMMIT || lock.transitiveLockDigest !== computeSpecDigest(lock.plugins)) {
+    throw new Error('运行时基线或插件锁摘要不匹配 / Inconsistent platform lock')
+  }
+  if (options.target === 'win32-x64') {
+    const capabilities = desktopCapabilities(spec, lock)
+    if (capabilities.missing.length || capabilities.unavailablePackages.length) {
+      throw new Error(`此构建缺少动作或插件物料 / Unavailable: ${[...capabilities.missing, ...capabilities.unavailablePackages].join(', ')}`)
+    }
   }
 
   const identity = projectRuntimeIdentity(spec)

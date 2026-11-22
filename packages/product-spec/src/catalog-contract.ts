@@ -218,6 +218,28 @@ export const ACTION_REGISTRY = {
     panelId: 'design-studio',
     capabilityIntent: 'design-ai-prototype',
   },
+  'design.openImageDesign': {
+    id: 'design.openImageDesign',
+    kind: 'panel-open',
+    label: { zh: '打开 AI 生图与 Demo 设计台', en: 'Open Image Design studio' },
+    inputType: 'void',
+    outputType: 'void',
+    deterministic: false,
+    requiresConnection: 'chatgpt-web-or-image-api',
+    panelId: 'gpt-image-design',
+    capabilityIntent: 'design-ai-image-demo',
+  },
+  'research.openProResearch': {
+    id: 'research.openProResearch',
+    kind: 'panel-open',
+    label: { zh: '打开 Pro 多轮调研', en: 'Open Pro Research' },
+    inputType: 'void',
+    outputType: 'void',
+    deterministic: false,
+    requiresConnection: 'chatgpt-web-chrome',
+    panelId: 'chatgpt-pro-research',
+    capabilityIntent: 'pro-web-research',
+  },
   'calendar.addDeadline': {
     id: 'calendar.addDeadline',
     kind: 'panel-open',
@@ -274,6 +296,8 @@ export const CAPABILITY_INTENTS = [
   'design-bitmap-annotate',
   'design-export-png',
   'design-ai-prototype',
+  'design-ai-image-demo',
+  'pro-web-research',
   'calendar-reminder',
   'email-workbench',
   'quick-notes',
@@ -281,3 +305,9 @@ export const CAPABILITY_INTENTS = [
 ] as const
 
 export type CapabilityIntent = (typeof CAPABILITY_INTENTS)[number]
+
+export {
+  DELIVERABLE_EXTERNAL_BUNDLES,
+  desktopCapabilities,
+  isDeliverableExternalBundle,
+} from './runtime-actions.js'

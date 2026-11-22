@@ -211,7 +211,7 @@ export const LockedPluginEntrySchema = z.object({
   packageName: z.string().min(1),
   version: z.string().min(1),
   trustTier: z.enum(['builtin', 'verified-community', 'experimental-unverified']),
-  sourceKind: z.enum(['builtin', 'npm', 'git']),
+  sourceKind: z.enum(['builtin', 'npm', 'git', 'local-installed']),
   sourceRef: z.string().min(1),
   integritySha512: z.string().regex(/^sha512-[A-Za-z0-9+/=]+$/),
   runtimeKind: z.enum(['client-only', 'host-and-client', 'host-only']),
